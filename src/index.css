@@ -1,0 +1,224 @@
+@import "tailwindcss";
+
+/* ============================================
+   CV PAGE STYLES (Preview & Print)
+   ============================================ */
+
+.cv-page-wrapper {
+  width: 210mm;
+  min-height: 297mm;
+  background: white;
+  flex-shrink: 0;
+}
+
+.cv-page {
+  padding: 15mm 18mm;
+  color: #111;
+  font-size: 10.5pt;
+  line-height: 1.4;
+}
+
+/* Classic template heading: ALL CAPS, small */
+.cv-heading-classic {
+  font-size: 11pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #111;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+/* Minimal template heading: Bold, title case */
+.cv-heading-minimal {
+  font-size: 12pt;
+  font-weight: 700;
+  color: #111;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  border-bottom: none;
+}
+
+.cv-divider {
+  border: none;
+  border-top: 0.5px solid #444;
+  margin: 2px 0 6px 0;
+}
+
+.cv-text {
+  font-size: 10pt;
+  color: #222;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.cv-entry {
+  margin-top: 6px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cv-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cv-entry-title {
+  font-weight: 700;
+  font-size: 10.5pt;
+  color: #111;
+}
+
+.cv-entry-subtitle {
+  font-weight: 400;
+  font-size: 10pt;
+  color: #333;
+}
+
+.cv-entry-date {
+  font-size: 9.5pt;
+  color: #444;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cv-list {
+  margin: 3px 0 0 0;
+  padding-left: 16px;
+  list-style: none;
+}
+
+.cv-list li {
+  font-size: 10pt;
+  color: #222;
+  line-height: 1.45;
+  margin-bottom: 1px;
+  position: relative;
+  padding-left: 4px;
+}
+
+.cv-list li::before {
+  content: "•";
+  position: absolute;
+  left: -14px;
+  color: #444;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+/* ============================================
+   PRINT STYLESHEET
+   ============================================ */
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide ALL UI chrome */
+  .no-print,
+  body > div > div > div:first-child, /* toolbar */
+  button, select, input, textarea, label {
+    display: none !important;
+  }
+
+  /* Hide editor panel, ATS sidebar, mobile overlay */
+  .sm\:w-\[420px\],
+  .lg\:w-\[300px\],
+  .fixed {
+    display: none !important;
+  }
+
+  /* Show only the preview */
+  #cv-preview {
+    display: block !important;
+    width: 100% !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .cv-page-wrapper {
+    width: 100% !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+  }
+
+  .cv-page {
+    padding: 12mm 15mm !important;
+    color: #000 !important;
+  }
+
+  .cv-heading-classic,
+  .cv-heading-minimal,
+  .cv-entry-title {
+    color: #000 !important;
+  }
+
+  .cv-text,
+  .cv-entry-subtitle,
+  .cv-list li {
+    color: #111 !important;
+  }
+
+  .cv-entry-date {
+    color: #333 !important;
+  }
+
+  /* Prevent page breaks inside entries */
+  .cv-entry {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  h2 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* Ensure the flex parent shows the preview */
+  .flex-1 {
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  /* Override dark bg */
+  * {
+    background: transparent !important;
+  }
+
+  .cv-page-wrapper {
+    background: white !important;
+  }
+}
