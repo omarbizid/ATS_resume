@@ -137,7 +137,8 @@
     margin: 0;
   }
 
-  html, body {
+  html,
+  body {
     margin: 0 !important;
     padding: 0 !important;
     background: white !important;
@@ -147,8 +148,13 @@
 
   /* Hide ALL UI chrome */
   .no-print,
-  body > div > div > div:first-child, /* toolbar */
-  button, select, input, textarea, label {
+  body>div>div>div:first-child,
+  /* toolbar */
+  button,
+  select,
+  input,
+  textarea,
+  label {
     display: none !important;
   }
 
@@ -207,18 +213,34 @@
     page-break-after: avoid !important;
   }
 
-  /* Ensure the flex parent shows the preview */
-  .flex-1 {
+  /* Ensure all containers allow text to flow for proper PDF text layers */
+  .flex-1,
+  .overflow-hidden,
+  .overflow-y-auto,
+  [class*="overflow"] {
     display: block !important;
     overflow: visible !important;
+    height: auto !important;
   }
 
-  /* Override dark bg */
-  * {
+  /* Override dark bg — use targeted selectors instead of wildcard * */
+  .bg-zinc-950,
+  .bg-zinc-800\/30,
+  .bg-zinc-900,
+  .bg-black\/60,
+  [class*="bg-zinc"],
+  [class*="bg-black"] {
     background: transparent !important;
   }
 
   .cv-page-wrapper {
     background: white !important;
+  }
+
+  /* Ensure text is rendered as real text, not rasterized */
+  .cv-page,
+  .cv-page * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
