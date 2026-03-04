@@ -18,6 +18,11 @@
   line-height: 1.4;
 }
 
+/* Prevent sections from being split across visual page breaks */
+.cv-entry {
+  break-inside: avoid;
+}
+
 /* Classic template heading: ALL CAPS, small */
 .cv-heading-classic {
   font-size: 11pt;
