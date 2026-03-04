@@ -20,6 +20,13 @@ interface ChatMessage {
     text: string;
 }
 
+interface CVUpdate {
+    path: string;
+    value: unknown;
+}
+
+// --- System prompt with auto-apply instructions ---
+
 function buildSystemPrompt(cvData: CVData): string {
     const lang = cvData.cvLanguage === 'fr' ? 'French' : 'English';
     return `You are a professional CV/resume assistant embedded in an ATS-friendly CV Builder app.
@@ -30,32 +37,84 @@ Reply in the same language the user writes to you.
 Current CV data (JSON):
 ${JSON.stringify(cvData, null, 2)}
 
+IMPORTANT — APPLYING CHANGES:
+When the user asks you to change, add, improve, or fill a section of their CV, you MUST include a JSON action block so the changes are applied automatically.
+
+To apply changes, output one or more action blocks using this exact format:
+
+<<<CV_UPDATE>>>
+{"path": "field.path", "value": "new value"}
+<<<END_UPDATE>>>
+
+The "path" uses dot notation matching the CV JSON structure. Examples:
+- "summary.text" → updates the summary text
+- "personal.fullName" → updates the full name
+- "personal.targetTitle" → updates the target title
+- "experience.0.bullets" → replaces bullets array for first experience
+- "experience.0.role" → updates role of first experience
+- "skillGroups.0.skills" → replaces skills array for first skill group
+- "projects.0.title" → updates title of first project
+- "projects.0.bullets" → replaces bullets of first project
+- "languages" → replaces entire languages array
+
+For arrays (bullets, skills, etc.), provide the full array as value.
+
+You can include multiple <<<CV_UPDATE>>> blocks in one response.
+
+ALWAYS include the action block(s) when the user wants a modification. First explain what you changed briefly, then include the action block(s).
+
 Guidelines:
 - Give concise, actionable advice.
-- When suggesting text for the CV (summary, bullets, skills, etc.), format it clearly so the user can copy-paste.
 - Use strong action verbs for bullet points (e.g., "Developed", "Implemented", "Managed").
 - Keep bullet points to 1-2 lines each, quantified where possible.
-- If the user asks to "fill" or "improve" a section, produce ready-to-use text.
-- If asked something unrelated to CVs, politely redirect to CV topics.
-- Never output markdown code fences for CV text — just plain text the user can paste.`;
+- If the user asks to "fill" or "improve" a section, produce ready-to-use text AND the action blocks.
+- If asked something unrelated to CVs, politely redirect to CV topics.`;
+}
+
+// --- Parse CV_UPDATE blocks from AI response ---
+
+function parseUpdates(text: string): { cleanText: string; updates: CVUpdate[] } {
+    const updates: CVUpdate[] = [];
+    let cleanText = text;
+
+    const regex = /<<<CV_UPDATE>>>\s*\n?([\s\S]*?)\n?<<<END_UPDATE>>>/g;
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+        try {
+            const parsed = JSON.parse(match[1].trim());
+            if (parsed.path && parsed.value !== undefined) {
+                updates.push({ path: parsed.path, value: parsed.value });
+            }
+        } catch {
+            // Skip malformed JSON
+        }
+        cleanText = cleanText.replace(match[0], '');
+    }
+
+    // Clean up extra whitespace
+    cleanText = cleanText.replace(/\n{3,}/g, '\n\n').trim();
+
+    return { cleanText, updates };
 }
 
 export default function AIChatbot() {
-    const { cvData } = useCV();
+    const { cvData, updateField } = useCV();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [modelId, setModelId] = useState<GeminiModelId>(getModel);
+    const [pendingUpdates, setPendingUpdates] = useState<Map<number, CVUpdate[]>>(new Map());
+    const [appliedUpdates, setAppliedUpdates] = useState<Set<number>>(new Set());
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Proxy / key state
-    const [proxyMode, setProxyMode] = useState<boolean | null>(null); // null = checking
+    const [proxyMode, setProxyMode] = useState<boolean | null>(null);
     const [apiKey, setApiKeyState] = useState(getApiKey);
     const [showKeyInput, setShowKeyInput] = useState(false);
     const [keyDraft, setKeyDraft] = useState('');
 
-    // Check proxy on mount
     useEffect(() => {
         checkProxyAvailable().then((available) => {
             setProxyMode(available);
@@ -88,6 +147,17 @@ export default function AIChatbot() {
         setMessages([]);
     };
 
+    const applyUpdates = (messageIndex: number) => {
+        const updates = pendingUpdates.get(messageIndex);
+        if (!updates) return;
+
+        for (const update of updates) {
+            updateField(update.path, update.value);
+        }
+
+        setAppliedUpdates((prev) => new Set(prev).add(messageIndex));
+    };
+
     const handleSend = async () => {
         const trimmed = input.trim();
         if (!trimmed || loading) return;
@@ -102,7 +172,6 @@ export default function AIChatbot() {
             let reply: string;
 
             if (proxyMode) {
-                // Proxy mode: send everything to /api/ai
                 const allMessages = [...messages, userMsg];
                 reply = await sendMessageViaProxy(
                     allMessages,
@@ -111,7 +180,6 @@ export default function AIChatbot() {
                     modelId
                 );
             } else {
-                // Direct mode: call Gemini API with user's key
                 const history = messages.map((m) => ({
                     role: m.role as 'user' | 'model',
                     parts: [{ text: m.text }],
@@ -120,7 +188,21 @@ export default function AIChatbot() {
                 reply = await sendMessageDirect(apiKey, modelId, history, trimmed, systemPrompt);
             }
 
-            setMessages((prev) => [...prev, { role: 'model', text: reply }]);
+            // Parse any CV_UPDATE blocks from the response
+            const { cleanText, updates } = parseUpdates(reply);
+            const newMsgIndex = messages.length + 1; // +1 because userMsg was added
+
+            setMessages((prev) => [...prev, { role: 'model', text: cleanText }]);
+
+            if (updates.length > 0) {
+                setPendingUpdates((prev) => new Map(prev).set(newMsgIndex, updates));
+
+                // Auto-apply the updates
+                for (const update of updates) {
+                    updateField(update.path, update.value);
+                }
+                setAppliedUpdates((prev) => new Set(prev).add(newMsgIndex));
+            }
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Unknown error';
             setError(msg);
@@ -157,7 +239,7 @@ export default function AIChatbot() {
         );
     }
 
-    // API key setup screen (only in direct mode when no key)
+    // API key setup screen
     if (showKeyInput && !proxyMode) {
         return (
             <div className="flex flex-col h-full">
@@ -246,7 +328,7 @@ export default function AIChatbot() {
             <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
                 {messages.length === 0 && (
                     <div className="space-y-3 pt-4">
-                        <p className="text-xs text-zinc-400 text-center">Ask the AI to help you fill or improve your CV</p>
+                        <p className="text-xs text-zinc-400 text-center">Ask the AI to help you fill or improve your CV. Changes will be applied automatically.</p>
                         <div className="grid grid-cols-1 gap-2">
                             {quickPrompts.map((prompt, i) => (
                                 <button
@@ -262,18 +344,36 @@ export default function AIChatbot() {
                 )}
 
                 {messages.map((msg, i) => (
-                    <div
-                        key={i}
-                        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
-                        <div
-                            className={`max-w-[85%] px-3 py-2 rounded-xl text-xs leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
+                    <div key={i}>
+                        <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div
+                                className={`max-w-[85%] px-3 py-2 rounded-xl text-xs leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
                                     ? 'bg-blue-600/80 text-white rounded-br-sm'
                                     : 'bg-zinc-800 text-zinc-200 border border-zinc-700/50 rounded-bl-sm'
-                                }`}
-                        >
-                            {msg.text}
+                                    }`}
+                            >
+                                {msg.text}
+                            </div>
                         </div>
+                        {/* Applied indicator for AI messages with updates */}
+                        {msg.role === 'model' && appliedUpdates.has(i) && (
+                            <div className="flex justify-start mt-1 ml-1">
+                                <span className="text-[10px] text-emerald-400 flex items-center gap-1">
+                                    ✓ Changes applied to your CV
+                                </span>
+                            </div>
+                        )}
+                        {/* Manual apply button if updates exist but weren't auto-applied */}
+                        {msg.role === 'model' && pendingUpdates.has(i) && !appliedUpdates.has(i) && (
+                            <div className="flex justify-start mt-1.5 ml-1">
+                                <button
+                                    onClick={() => applyUpdates(i)}
+                                    className="px-3 py-1 bg-emerald-600/80 hover:bg-emerald-500 text-white text-[10px] font-medium rounded-lg transition flex items-center gap-1"
+                                >
+                                    ✨ Apply changes
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ))}
 

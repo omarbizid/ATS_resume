@@ -6,7 +6,7 @@ interface Props {
 }
 
 export default function ClassicTemplate({ cvData }: Props) {
-    const { personal, summary, experience, education, skillGroups, certifications, languages, extracurriculars } = cvData;
+    const { personal, summary, experience, education, skillGroups, certifications, languages, extracurriculars, projects } = cvData;
     const sections = [...cvData.sectionSettings].sort((a, b) => a.order - b.order).filter((s) => s.visible);
     const t = getTranslations(cvData.cvLanguage ?? 'en');
     const H = t.headings;
@@ -147,6 +147,38 @@ export default function ClassicTemplate({ cvData }: Props) {
                                 {item.bullets.filter(Boolean).length > 0 && (
                                     <ul className="cv-list">
                                         {item.bullets.filter(Boolean).map((b, i) => (
+                                            <li key={i}>{b}</li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                );
+            }
+            case 'projects': {
+                const filled = (projects ?? []).filter((p) => p.title);
+                if (!filled.length) return null;
+                return (
+                    <div key={key}>
+                        <h2 className="cv-heading-classic">{H.projects}</h2>
+                        <hr className="cv-divider" />
+                        {filled.map((proj) => (
+                            <div key={proj.id} className="cv-entry">
+                                <div className="cv-entry-header">
+                                    <div>
+                                        <span className="cv-entry-title">{proj.title}</span>
+                                        {proj.description && <span className="cv-entry-subtitle"> | {proj.description}</span>}
+                                    </div>
+                                    {(proj.startDate || proj.endDate) && (
+                                        <span className="cv-entry-date">
+                                            {proj.startDate}{proj.startDate && proj.endDate && ' - '}{proj.endDate}
+                                        </span>
+                                    )}
+                                </div>
+                                {proj.bullets.filter(Boolean).length > 0 && (
+                                    <ul className="cv-list">
+                                        {proj.bullets.filter(Boolean).map((b, i) => (
                                             <li key={i}>{b}</li>
                                         ))}
                                     </ul>

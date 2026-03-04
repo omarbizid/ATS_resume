@@ -21,6 +21,7 @@ const translations: Record<CVLanguage, CVTranslations> = {
             certifications: 'CERTIFICATIONS',
             languages: 'LANGUAGES',
             extracurriculars: 'EXTRACURRICULARS',
+            projects: 'ACADEMIC & PERSONAL PROJECTS',
         },
         labels: {
             present: 'Present',
@@ -37,6 +38,7 @@ const translations: Record<CVLanguage, CVTranslations> = {
             certifications: 'CERTIFICATIONS',
             languages: 'LANGUES',
             extracurriculars: 'ACTIVITES EXTRA-PROFESSIONNELLES',
+            projects: 'PROJETS ACADÉMIQUES ET PERSONNELS',
         },
         labels: {
             present: 'Aujourd\'hui',
@@ -56,6 +58,7 @@ const minimalTranslations: Record<CVLanguage, Record<SectionKey, string>> = {
         certifications: 'Certifications',
         languages: 'Languages',
         extracurriculars: 'Extracurriculars',
+        projects: 'Academic & Personal Projects',
     },
     fr: {
         summary: 'Profil',
@@ -65,6 +68,7 @@ const minimalTranslations: Record<CVLanguage, Record<SectionKey, string>> = {
         certifications: 'Certifications',
         languages: 'Langues',
         extracurriculars: 'Activit\u00e9s extra-professionnelles',
+        projects: 'Projets acad\u00e9miques et personnels',
     },
 };
 

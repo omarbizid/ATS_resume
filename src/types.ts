@@ -61,6 +61,15 @@ export interface ExtracurricularItem {
     bullets: string[];
 }
 
+export interface ProjectItem {
+    id: string;
+    title: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+    bullets: string[];
+}
+
 export type SectionKey =
     | 'summary'
     | 'experience'
@@ -68,7 +77,8 @@ export type SectionKey =
     | 'skills'
     | 'certifications'
     | 'languages'
-    | 'extracurriculars';
+    | 'extracurriculars'
+    | 'projects';
 
 export interface SectionSetting {
     key: SectionKey;
@@ -89,6 +99,7 @@ export interface CVData {
     certifications: CertificationItem[];
     languages: LanguageItem[];
     extracurriculars: ExtracurricularItem[];
+    projects: ProjectItem[];
     sectionSettings: SectionSetting[];
     templateId: TemplateId;
     cvLanguage: CVLanguage;

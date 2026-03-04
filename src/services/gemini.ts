@@ -6,9 +6,9 @@ const MODEL_KEY = 'cv-builder-gemini-model';
 const PROXY_STATUS_KEY = 'cv-builder-proxy-available';
 
 export const AVAILABLE_MODELS = [
-    { id: 'gemini-2.0-flash-lite', label: 'Gemini 2.0 Flash Lite (recommended)' },
-    { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
-    { id: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },
+    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (recommended)' },
+    { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
+    { id: 'gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro Preview' },
 ] as const;
 
 export type GeminiModelId = typeof AVAILABLE_MODELS[number]['id'];
@@ -30,7 +30,12 @@ export function clearApiKey() {
 // --- Model selection ---
 
 export function getModel(): GeminiModelId {
-    return (localStorage.getItem(MODEL_KEY) as GeminiModelId) || 'gemini-2.0-flash-lite';
+    const stored = localStorage.getItem(MODEL_KEY);
+    // Validate stored model against available list to avoid using deprecated models
+    if (stored && AVAILABLE_MODELS.some((m) => m.id === stored)) {
+        return stored as GeminiModelId;
+    }
+    return 'gemini-2.5-flash';
 }
 
 export function setModel(model: GeminiModelId) {

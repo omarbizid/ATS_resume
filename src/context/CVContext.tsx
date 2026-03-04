@@ -7,7 +7,19 @@ const STORAGE_KEY = 'cv-builder-data';
 function loadFromStorage(): CVData | null {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
+        if (raw) {
+            const data = JSON.parse(raw) as CVData;
+            // Migrate: add projects array if missing
+            if (!data.projects) {
+                data.projects = [];
+            }
+            // Migrate: add projects section setting if missing
+            if (!data.sectionSettings.find((s) => s.key === 'projects')) {
+                const maxOrder = Math.max(...data.sectionSettings.map((s) => s.order), -1);
+                data.sectionSettings.push({ key: 'projects', label: 'Projects', visible: false, order: maxOrder + 1 });
+            }
+            return data;
+        }
     } catch { /* ignore */ }
     return null;
 }
@@ -23,6 +35,7 @@ type Action =
     | { type: 'SET_LANGUAGE'; payload: CVLanguage }
     | { type: 'TOGGLE_SECTION'; payload: SectionKey }
     | { type: 'REORDER_SECTION'; payload: { key: SectionKey; direction: 'up' | 'down' } }
+    | { type: 'MOVE_SECTION'; payload: { fromIndex: number; toIndex: number } }
     | { type: 'REORDER_ITEM'; payload: { section: string; fromIndex: number; toIndex: number } };
 
 function setNestedField(obj: CVData, path: string, value: unknown): CVData {
@@ -72,6 +85,15 @@ function cvReducer(state: CVData, action: Action): CVData {
                 if (i === swapIdx) return { ...s, order: idx };
                 return { ...s, order: i };
             });
+            return { ...state, sectionSettings: newSettings };
+        }
+
+        case 'MOVE_SECTION': {
+            const { fromIndex, toIndex } = action.payload;
+            const sorted = [...state.sectionSettings].sort((a, b) => a.order - b.order);
+            const [moved] = sorted.splice(fromIndex, 1);
+            sorted.splice(toIndex, 0, moved);
+            const newSettings = sorted.map((s, i) => ({ ...s, order: i }));
             return { ...state, sectionSettings: newSettings };
         }
 
