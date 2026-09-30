@@ -63,7 +63,7 @@ export default function DesignEditor() {
                 {busy && <p role="status" className="text-xs">Preparing photo…</p>}
                 {error && <p role="alert" className="text-xs text-red-400">{error}</p>}
                 {cvData.design?.photo && <div className="flex items-center gap-3">
-                    <img src={cvData.design.photo} alt="Selected portrait" className="w-16 h-16 rounded-full object-cover" style={{ objectPosition: `50% ${cvData.design.photoPosition ?? 50}%` }} />
+                    <img src={cvData.design.photo} alt="Selected portrait" className="w-16 h-16 rounded-lg object-cover" style={{ objectPosition: `50% ${cvData.design.photoPosition ?? 50}%` }} />
                     <div className="flex-1 space-y-2">
                         <label className="block text-xs text-zinc-300">Photo position
                             <input aria-label="Photo position" type="range" min="0" max="100" value={cvData.design.photoPosition ?? 50} onChange={e => updateField('design.photoPosition', Number(e.target.value))} className="block w-full mt-1" />

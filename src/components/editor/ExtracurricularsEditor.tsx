@@ -1,4 +1,5 @@
 import { useCV } from '../../context/CVContext';
+import { ArrowDown, ArrowUp, Plus, X } from '@phosphor-icons/react';
 import { BulletInput } from './fields';
 import type { ExtracurricularItem } from '../../types';
 import { v4 } from '../../data/uuid';
@@ -50,20 +51,20 @@ export default function ExtracurricularsEditor() {
                     <div className="flex items-center justify-between">
                         <span className="text-xs text-zinc-500 font-medium">Activity {idx + 1}</span>
                         <div className="flex gap-1">
-                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up">&uarr;</button>
-                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down">&darr;</button>
-                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove">&times;</button>
+                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up"><ArrowUp /></button>
+                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down"><ArrowDown /></button>
+                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove"><X /></button>
                         </div>
                     </div>
                     <div>
-                        <label className="block text-xs text-zinc-400 mb-1">Activity Title</label>
-                        <input value={item.title} onChange={(e) => updateField(`extracurriculars.${idx}.title`, e.target.value)} placeholder="Coding Club President" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
+                        <label className="block text-xs text-zinc-400 mb-1">Activity title</label>
+                        <input value={item.title} onChange={(e) => updateField(`extracurriculars.${idx}.title`, e.target.value)} placeholder="Coding Club President" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition" />
                     </div>
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <label className="text-xs text-zinc-400 font-medium">Bullets ({item.bullets.length}/3)</label>
                             {item.bullets.length < 3 && (
-                                <button onClick={() => addBullet(idx)} className="text-xs text-blue-400 hover:text-blue-300 transition">+ Add Bullet</button>
+                                <button onClick={() => addBullet(idx)} className="inline-flex items-center gap-1 text-xs text-accent-400 hover:text-accent-300"><Plus />Add bullet</button>
                             )}
                         </div>
                         {item.bullets.map((b, bi) => (
@@ -71,15 +72,15 @@ export default function ExtracurricularsEditor() {
                                 <span className="text-zinc-600 mt-2 text-sm" aria-hidden="true">•</span>
                                 <BulletInput value={b} onChange={(v) => updateBullet(idx, bi, v)} placeholder={`Describe contribution ${bi + 1}`} label={`Bullet ${bi + 1}`} />
                                 {item.bullets.length > 1 && (
-                                    <button onClick={() => removeBullet(idx, bi)} aria-label={`Remove bullet ${bi + 1}`} className="text-zinc-500 hover:text-red-400 px-1 transition">&times;</button>
+                                    <button onClick={() => removeBullet(idx, bi)} aria-label={`Remove bullet ${bi + 1}`} className="text-zinc-500 hover:text-red-400 px-1 transition"><X /></button>
                                 )}
                             </div>
                         ))}
                     </div>
                 </div>
             ))}
-            <button onClick={addItem} className="w-full py-2 border-2 border-dashed border-zinc-700 rounded-lg text-sm text-zinc-400 hover:text-blue-400 hover:border-blue-500/50 transition">
-                + Add Extracurricular
+            <button onClick={addItem} className="w-full py-2 flex items-center justify-center gap-1.5 border border-dashed border-zinc-700 rounded-lg text-sm text-zinc-400 hover:text-accent-400 hover:border-accent-500/50 transition">
+                <Plus />Add extracurricular
             </button>
         </div>
     );

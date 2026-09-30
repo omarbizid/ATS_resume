@@ -43,17 +43,17 @@ await page.getByRole('button',{name:'Designed resume',exact:true}).click();
 assert.equal(await page.locator('#cv-preview .designed-photo').count(),1);
 await page.getByLabel('Upload portrait').setInputFiles({name:'bad.txt',mimeType:'text/plain',buffer:Buffer.from('invalid')});
 await page.getByRole('alert').filter({hasText:'Choose a JPG'}).waitFor();
-await page.getByRole('button',{name:'ATS Check',exact:true}).click();
+await page.getByRole('button',{name:'ATS check',exact:true}).click();
 assert.ok(await page.getByText('Designed resumes use columns').first().isVisible());
 // "Fix this" opens the editor where the problem is fixed.
-await page.getByRole('button',{name:'Fix this →'}).first().click();
+await page.getByRole('button',{name:'Fix this'}).first().click();
 await page.waitForFunction(()=>document.getElementById('editor-design')?.contains(document.activeElement));
 // Job description match lists covered and missing terms.
 await page.getByRole('textbox',{name:'Job description',exact:true}).first().fill('We are hiring a React developer with TypeScript and Kubernetes. Kubernetes experience is a plus.');
 assert.ok(await page.getByText(/Your CV mentions \d+ of \d+ key terms/).first().isVisible());
 assert.ok(await page.locator('li',{hasText:/^kubernetes$/}).first().isVisible(),'missing term shown');
 assert.ok(await page.locator('li',{hasText:/^react$/}).first().isVisible(),'found term shown');
-await page.getByRole('button',{name:'ATS Check',exact:true}).click();
+await page.getByRole('button',{name:'ATS check',exact:true}).click();
 // Capture the actual export window, then generate its PDF with real text and decoded photo.
 await page.context().addInitScript(()=>{window.print=()=>{};});
 const popupPromise=page.waitForEvent('popup');
@@ -66,22 +66,28 @@ await popup.pdf({path:'test-results/designed-export.pdf',printBackground:true,pr
 await popup.close();
 // JSON backup round-trip, including the photo and appearance.
 const downloadPromise = page.waitForEvent('download');
-await page.getByRole('button', {name:'Export JSON',exact:true}).click();
+// JSON backups live in the File menu.
+const openFileMenu=()=>page.getByRole('button',{name:'File',exact:true}).click();
+await openFileMenu();
+await page.getByRole('button', {name:'Export JSON backup',exact:true}).click();
 const download = await downloadPromise;
 const backup = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
 assert.ok(backup.design.photo.startsWith('data:image/jpeg;base64,'));
 await page.getByRole('button',{name:'Remove photo',exact:true}).click();
 assert.equal(await page.locator('#cv-preview img').count(),0);
+await openFileMenu();
 await page.locator('input[accept=".json"]').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
 await page.locator('#cv-preview .designed-photo').waitFor();
 // Old ATS JSON without projects still works and can be converted.
 const legacy = {...original}; delete legacy.projects;
 legacy.sectionSettings = legacy.sectionSettings.filter(s=>s.key !== 'projects');
+await openFileMenu();
 await page.locator('input[accept=".json"]').setInputFiles({ name: 'legacy.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(legacy)) });
 await page.getByRole('button',{name:'Designed resume',exact:true}).click();
 await page.locator('#cv-preview .designed-page').waitFor();
 assert.equal(await page.locator('#cv-preview img').count(),0);
 // Restore portrait for the responsive screenshot.
+await openFileMenu();
 await page.locator('input[accept=".json"]').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
 await page.setViewportSize({width:390,height:844});
 await page.getByRole('button',{name:'Preview',exact:true}).click();

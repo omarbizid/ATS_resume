@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useRef, useState, type ReactNode } from 'react';
+import { X } from '@phosphor-icons/react';
 import type { CVData, CVLanguage, SectionKey, TemplateId } from '../types';
 import { studentCV } from '../data/sampleData';
 
@@ -270,17 +271,17 @@ export function CVProvider({ children }: { children: ReactNode }) {
             {saveError && <div role="alert" className="no-print bg-amber-950 text-amber-100 p-3 text-sm">Automatic saving is unavailable or storage is full. Export JSON to keep your changes and photo.</div>}
             {children}
             {toast && (
-                <div role="status" aria-live="polite" className="no-print fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 bg-zinc-800 border border-zinc-600 text-zinc-100 text-sm rounded-lg shadow-2xl pl-4 pr-2 py-2 max-w-[calc(100vw-2rem)]">
+                <div role="status" aria-live="polite" className="no-print fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm rounded-xl shadow-2xl shadow-black/50 pl-4 pr-2 py-2 max-w-[calc(100vw-2rem)]">
                     <span>{toast.message}</span>
                     {toast.restore && (
                         <button
                             onClick={() => { dispatch({ type: 'RESTORE', payload: toast.restore! }); setToast(null); }}
-                            className="px-2 py-1 text-blue-300 hover:text-blue-200 font-medium rounded transition"
+                            className="px-2 py-1 text-accent-300 hover:text-accent-200 font-medium rounded-md"
                         >
                             Undo
                         </button>
                     )}
-                    <button onClick={() => setToast(null)} aria-label="Dismiss notification" className="px-1.5 text-zinc-400 hover:text-zinc-200 transition">&times;</button>
+                    <button onClick={() => setToast(null)} aria-label="Dismiss notification" className="p-1 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700"><X /></button>
                 </div>
             )}
         </CVContext.Provider>

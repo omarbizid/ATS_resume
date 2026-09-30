@@ -1,4 +1,5 @@
 import { useCV } from '../../context/CVContext';
+import { ArrowDown, ArrowUp, Plus, X } from '@phosphor-icons/react';
 import type { LanguageItem } from '../../types';
 import { v4 } from '../../data/uuid';
 
@@ -38,19 +39,19 @@ export default function LanguagesEditor() {
                     <div className="flex items-center justify-between mb-3">
                         <span className="text-xs text-zinc-500 font-medium">Language {idx + 1}</span>
                         <div className="flex gap-1">
-                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up">&uarr;</button>
-                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down">&darr;</button>
-                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove">&times;</button>
+                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up"><ArrowUp /></button>
+                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down"><ArrowDown /></button>
+                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove"><X /></button>
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                         <div>
                             <label className="block text-xs text-zinc-400 mb-1">Language</label>
-                            <input value={item.language} onChange={(e) => updateField(`languages.${idx}.language`, e.target.value)} placeholder="English" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
+                            <input value={item.language} onChange={(e) => updateField(`languages.${idx}.language`, e.target.value)} placeholder="English" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition" />
                         </div>
                         <div>
                             <label className="block text-xs text-zinc-400 mb-1">Level</label>
-                            <select value={item.level} onChange={(e) => updateField(`languages.${idx}.level`, e.target.value)} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition">
+                            <select value={item.level} onChange={(e) => updateField(`languages.${idx}.level`, e.target.value)} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition">
                                 {LEVELS.map((l) => (
                                     <option key={l} value={l}>{l}</option>
                                 ))}
@@ -59,8 +60,8 @@ export default function LanguagesEditor() {
                     </div>
                 </div>
             ))}
-            <button onClick={addItem} className="w-full py-2 border-2 border-dashed border-zinc-700 rounded-lg text-sm text-zinc-400 hover:text-blue-400 hover:border-blue-500/50 transition">
-                + Add Language
+            <button onClick={addItem} className="w-full py-2 flex items-center justify-center gap-1.5 border border-dashed border-zinc-700 rounded-lg text-sm text-zinc-400 hover:text-accent-400 hover:border-accent-500/50 transition">
+                <Plus />Add language
             </button>
         </div>
     );

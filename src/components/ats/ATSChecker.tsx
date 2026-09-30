@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ArrowRight, CheckCircle, XCircle } from '@phosphor-icons/react';
 import { useCV } from '../../context/CVContext';
 import type { EditorTarget } from '../editor/editorNav';
 import { cvWords, extractKeywords, hasKeyword } from '../../data/keywords';
@@ -65,7 +66,7 @@ export default function ATSChecker({ onJump }: Props) {
         result.push({
             label: 'Summary',
             pass: summaryLen >= 20,
-            message: summaryLen === 0 ? 'Missing summary' : summaryLen < 20 ? 'Summary is too short: aim for 2–3 sentences' : 'Summary provided',
+            message: summaryLen === 0 ? 'Missing summary' : summaryLen < 20 ? 'Summary is too short: aim for 2-3 sentences' : 'Summary provided',
             target: 'summary',
         });
 
@@ -152,7 +153,7 @@ export default function ATSChecker({ onJump }: Props) {
     return (
         <div className="space-y-4">
             <div className={`text-center py-4 rounded-xl border ${scoreBg}`}>
-                <div className={`text-3xl font-bold ${scoreColor}`}>{score}%</div>
+                <div className={`text-3xl font-semibold tracking-tight tabular-nums ${scoreColor}`}>{score}%</div>
                 <div className="text-xs text-zinc-400 mt-1">
                     {passed}/{total} checks passed
                 </div>
@@ -165,7 +166,7 @@ export default function ATSChecker({ onJump }: Props) {
                         className={`flex items-start gap-2 px-3 py-2 rounded-lg text-sm ${check.pass ? 'bg-emerald-500/5 text-zinc-300' : 'bg-red-500/5 text-zinc-300'}`}
                     >
                         <span className={`mt-0.5 text-xs ${check.pass ? 'text-emerald-400' : 'text-red-400'}`} aria-hidden="true">
-                            {check.pass ? '✓' : '✗'}
+                            {check.pass ? <CheckCircle weight="fill" /> : <XCircle weight="fill" />}
                         </span>
                         <div className="flex-1 min-w-0">
                             <span className="sr-only">{check.pass ? 'Passed: ' : 'Failed: '}</span>
@@ -177,8 +178,8 @@ export default function ATSChecker({ onJump }: Props) {
                                 </ul>
                             )}
                             {!check.pass && check.target && (
-                                <button onClick={() => onJump(check.target!)} className="block mt-1 text-xs text-blue-400 hover:text-blue-300 transition">
-                                    Fix this →
+                                <button onClick={() => onJump(check.target!)} className="inline-flex items-center gap-1 mt-1 text-xs text-accent-400 hover:text-accent-300">
+                                    Fix this <ArrowRight size={12} />
                                 </button>
                             )}
                         </div>
@@ -215,7 +216,7 @@ function JobMatch() {
                 rows={5}
                 aria-label="Job description"
                 placeholder="Paste a job description to see which of its keywords your CV covers."
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition resize-y"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition resize-y"
             />
             {keywords.length > 0 && (
                 <div className="space-y-2">

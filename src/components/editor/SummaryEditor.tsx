@@ -1,4 +1,5 @@
 import { useCV } from '../../context/CVContext';
+import { Plus, X } from '@phosphor-icons/react';
 import { BulletInput } from './fields';
 
 export default function SummaryEditor() {
@@ -25,25 +26,25 @@ export default function SummaryEditor() {
         <div className="space-y-3">
             <div>
                 <label className="block text-xs font-medium text-zinc-400 mb-1">
-                    Professional Summary
+                    Professional summary
                 </label>
                 <textarea
                     value={text}
                     onChange={(e) => updateField('summary.text', e.target.value)}
                     placeholder="Brief professional summary (2-3 sentences)..."
                     rows={4}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition resize-none"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition resize-none"
                 />
             </div>
             <div>
                 <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-medium text-zinc-400">Key Highlights (max 3)</label>
+                    <label className="text-xs font-medium text-zinc-400">Key highlights (max 3)</label>
                     {highlights.length < 3 && (
                         <button
                             onClick={addHighlight}
-                            className="text-xs text-blue-400 hover:text-blue-300 transition"
+                            className="inline-flex items-center gap-1 text-xs text-accent-400 hover:text-accent-300"
                         >
-                            + Add Highlight
+                            <Plus />Add highlight
                         </button>
                     )}
                 </div>
@@ -56,7 +57,7 @@ export default function SummaryEditor() {
                             title="Remove"
                             aria-label={`Remove highlight ${i + 1}`}
                         >
-                            &times;
+                            <X />
                         </button>
                     </div>
                 ))}

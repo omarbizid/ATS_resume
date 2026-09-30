@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { ChatCircleText, CheckCircle, Key, WarningCircle } from '@phosphor-icons/react';
 import { useCV } from '../../context/CVContext';
 import {
     sendMessageViaProxy,
@@ -284,13 +285,13 @@ export default function AIChatbot() {
             <div className="flex flex-col h-full">
                 <div className="px-4 py-3 border-b border-zinc-700/50">
                     <h2 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                        <span className="text-lg">✨</span> AI Assistant
+                        <ChatCircleText size={18} className="text-accent-400" /> AI assistant
                     </h2>
                 </div>
                 <div className="flex-1 flex items-center justify-center p-4">
                     <div className="max-w-sm w-full space-y-4 text-center">
-                        <div className="text-3xl">🔑</div>
-                        <h3 className="text-sm font-semibold text-zinc-200">Enter your Gemini API Key</h3>
+                        <Key size={28} className="mx-auto text-accent-400" />
+                        <h3 className="text-sm font-semibold text-zinc-200">Enter your Gemini API key</h3>
                         <p className="text-xs text-zinc-400 leading-relaxed">
                             The assistant uses Google Gemini with your own free API key. The key is saved only in this
                             browser, and your CV text (not your photo) is sent to Google when you ask a question.
@@ -306,13 +307,13 @@ export default function AIChatbot() {
                                 href="https://aistudio.google.com/apikey"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-blue-400 hover:text-blue-300 underline"
+                                className="text-accent-400 hover:text-accent-300 underline"
                             >
                                 Google AI Studio
                             </a>
                         </p>
                         {isProxyAvailable() && (
-                            <button onClick={switchToFreeAI} className="text-xs text-blue-400 hover:text-blue-300 underline">
+                            <button onClick={switchToFreeAI} className="text-xs text-accent-400 hover:text-accent-300 underline">
                                 Use the free AI instead
                             </button>
                         )}
@@ -323,11 +324,11 @@ export default function AIChatbot() {
                                 onChange={(e) => setKeyDraft(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && saveKey()}
                                 placeholder="AIzaSy..."
-                                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition"
+                                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition"
                             />
                             <button
                                 onClick={saveKey}
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition"
+                                className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium rounded-lg transition"
                             >
                                 Save
                             </button>
@@ -344,9 +345,9 @@ export default function AIChatbot() {
             <div className="px-4 py-3 border-b border-zinc-700/50 space-y-2">
                 <div className="flex items-center justify-between">
                     <h2 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                        <span className="text-lg">✨</span> AI Assistant
+                        <ChatCircleText size={18} className="text-accent-400" /> AI assistant
                         {proxyMode && (
-                            <span className="text-xs bg-emerald-900/50 text-emerald-400 px-1.5 py-0.5 rounded-full font-normal">
+                            <span className="text-xs bg-accent-500/15 text-accent-300 px-1.5 py-0.5 rounded font-medium">
                                 Free
                             </span>
                         )}
@@ -381,7 +382,7 @@ export default function AIChatbot() {
                         aria-label="AI model"
                         value={modelId}
                         onChange={(e) => { const m = e.target.value as GeminiModelId; setModelId(m); setModel(m); }}
-                        className="w-full bg-zinc-800 border border-zinc-700 rounded-md px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-md px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-accent-500/50"
                     >
                         {AVAILABLE_MODELS.map((m) => (
                             <option key={m.id} value={m.id}>{m.label}</option>
@@ -420,7 +421,7 @@ export default function AIChatbot() {
                         <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             <div
                                 className={`max-w-[85%] px-3 py-2 rounded-xl text-xs leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
-                                    ? 'bg-blue-600/80 text-white rounded-br-sm'
+                                    ? 'bg-accent-600 text-white rounded-br-sm'
                                     : 'bg-zinc-800 text-zinc-200 border border-zinc-700/50 rounded-bl-sm'
                                     }`}
                             >
@@ -431,7 +432,7 @@ export default function AIChatbot() {
                         {msg.role === 'model' && appliedUpdates.has(i) && (
                             <div className="flex justify-start mt-1 ml-1">
                                 <span className="text-xs text-emerald-400 flex items-center gap-1">
-                                    ✓ Updated: {changedSections(pendingUpdates.get(i) ?? [])}
+                                    <CheckCircle /> Updated: {changedSections(pendingUpdates.get(i) ?? [])}
                                 </span>
                             </div>
                         )}
@@ -440,9 +441,9 @@ export default function AIChatbot() {
                             <div className="flex justify-start mt-1.5 ml-1">
                                 <button
                                     onClick={() => applyUpdates(i)}
-                                    className="px-3 py-1 bg-emerald-600/80 hover:bg-emerald-500 text-white text-xs font-medium rounded-lg transition flex items-center gap-1"
+                                    className="px-3 py-1 bg-accent-600 hover:bg-accent-700 text-white text-xs font-medium rounded-lg transition flex items-center gap-1"
                                 >
-                                    ✨ Apply changes
+                                    Apply changes
                                 </button>
                             </div>
                         )}
@@ -463,7 +464,7 @@ export default function AIChatbot() {
 
                 {error && (
                     <div className="px-3 py-2 bg-red-900/30 border border-red-700/50 rounded-lg text-xs text-red-300">
-                        ⚠ {error}
+                        <WarningCircle className="inline -mt-0.5 mr-1" />{error}
                     </div>
                 )}
 
@@ -479,12 +480,12 @@ export default function AIChatbot() {
                         onKeyDown={handleKeyDown}
                         placeholder="Ask about your CV..."
                         rows={1}
-                        className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition resize-none"
+                        className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition resize-none"
                     />
                     <button
                         onClick={handleSend}
                         disabled={loading || !input.trim()}
-                        className="px-3 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-sm font-medium rounded-lg transition"
+                        className="px-3 py-2 bg-accent-600 hover:bg-accent-700 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-sm font-medium rounded-lg transition"
                     >
                         Send
                     </button>

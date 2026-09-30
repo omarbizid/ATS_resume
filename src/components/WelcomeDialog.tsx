@@ -35,19 +35,19 @@ export default function WelcomeDialog() {
         }
     };
 
-    const choice = 'w-full text-left px-4 py-3 rounded-xl border transition focus:outline-none focus:ring-2 focus:ring-blue-500/60';
+    const choice = 'w-full text-left px-4 py-3 rounded-xl border transition focus:outline-none focus:ring-2 focus:ring-accent-500/60';
 
     return (
         <div className="no-print fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-            <div role="dialog" aria-modal="true" aria-labelledby="welcome-title" className="w-full max-w-md bg-zinc-900 border border-zinc-700 rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div role="dialog" aria-modal="true" aria-labelledby="welcome-title" className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4 shadow-2xl">
                 <div className="space-y-1">
-                    <h2 id="welcome-title" className="text-lg font-semibold text-zinc-100">Welcome to <span className="text-blue-400">CV</span> Studio</h2>
+                    <h2 id="welcome-title" className="text-lg font-semibold text-zinc-100">Welcome to CV Studio</h2>
                     <p className="text-sm text-zinc-400">Build an ATS-friendly resume with a live preview. Your CV is saved in this browser as you type.</p>
                 </div>
                 <div className="space-y-2">
-                    <button autoFocus onClick={startBlank} className={`${choice} bg-blue-600 border-blue-500 hover:bg-blue-500 text-white`}>
+                    <button autoFocus onClick={startBlank} className={`${choice} bg-accent-600 border-accent-500 hover:bg-accent-700 text-white`}>
                         <span className="block text-sm font-semibold">Start from scratch</span>
-                        <span className="block text-xs text-blue-100">An empty CV with the standard sections</span>
+                        <span className="block text-xs text-accent-100">An empty CV with the standard sections</span>
                     </button>
                     <button onClick={() => setOpen(false)} className={`${choice} bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-zinc-100`}>
                         <span className="block text-sm font-semibold">Explore the sample</span>
