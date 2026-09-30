@@ -169,6 +169,18 @@ export default function AIChatbot() {
         setError('');
     };
 
+    const switchToOwnKey = () => {
+        setProxyMode(false);
+        setShowKeyInput(!getApiKey());
+        setError('');
+    };
+
+    const switchToFreeAI = () => {
+        setProxyMode(true);
+        setShowKeyInput(false);
+        setError('');
+    };
+
     const removeKey = () => {
         clearApiKey();
         setApiKeyState('');
@@ -299,6 +311,11 @@ export default function AIChatbot() {
                                 Google AI Studio
                             </a>
                         </p>
+                        {isProxyAvailable() && (
+                            <button onClick={switchToFreeAI} className="text-xs text-blue-400 hover:text-blue-300 underline">
+                                Use the free AI instead
+                            </button>
+                        )}
                         <div className="flex gap-2">
                             <input
                                 type="password"
@@ -330,29 +347,47 @@ export default function AIChatbot() {
                         <span className="text-lg">✨</span> AI Assistant
                         {proxyMode && (
                             <span className="text-xs bg-emerald-900/50 text-emerald-400 px-1.5 py-0.5 rounded-full font-normal">
-                                proxy
+                                Free
                             </span>
                         )}
                     </h2>
-                    {!proxyMode && apiKey && (
-                        <button
-                            onClick={removeKey}
-                            className="text-xs text-zinc-500 hover:text-red-400 transition"
-                            title="Remove API key"
-                        >
-                            Remove key
-                        </button>
-                    )}
+                    <div className="flex items-center gap-3">
+                        {proxyMode ? (
+                            <button onClick={switchToOwnKey} className="text-xs text-zinc-500 hover:text-zinc-300 transition">
+                                Use my own key
+                            </button>
+                        ) : (
+                            isProxyAvailable() && (
+                                <button onClick={switchToFreeAI} className="text-xs text-zinc-500 hover:text-zinc-300 transition">
+                                    Use free AI
+                                </button>
+                            )
+                        )}
+                        {!proxyMode && apiKey && (
+                            <button
+                                onClick={removeKey}
+                                className="text-xs text-zinc-500 hover:text-red-400 transition"
+                                title="Remove API key"
+                            >
+                                Remove key
+                            </button>
+                        )}
+                    </div>
                 </div>
-                <select
-                    value={modelId}
-                    onChange={(e) => { const m = e.target.value as GeminiModelId; setModelId(m); setModel(m); }}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-md px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
-                >
-                    {AVAILABLE_MODELS.map((m) => (
-                        <option key={m.id} value={m.id}>{m.label}</option>
-                    ))}
-                </select>
+                {proxyMode ? (
+                    <p className="text-xs text-zinc-500">Gemini 2.5 Flash, shared free quota: if it's busy, wait a minute or use your own key.</p>
+                ) : (
+                    <select
+                        aria-label="AI model"
+                        value={modelId}
+                        onChange={(e) => { const m = e.target.value as GeminiModelId; setModelId(m); setModel(m); }}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-md px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                    >
+                        {AVAILABLE_MODELS.map((m) => (
+                            <option key={m.id} value={m.id}>{m.label}</option>
+                        ))}
+                    </select>
+                )}
             </div>
 
             {/* Messages */}
@@ -360,6 +395,12 @@ export default function AIChatbot() {
                 {messages.length === 0 && (
                     <div className="space-y-3 pt-4">
                         <p className="text-xs text-zinc-400 text-center">Ask the AI to help you fill or improve your CV. Changes are applied automatically, and you can undo them.</p>
+                        <p className="text-xs text-zinc-500 text-center">
+                            Your CV text (not your photo) is sent to Google Gemini to answer.{' '}
+                            {proxyMode
+                                ? 'On this free service Google may use it to improve its products, so leave out anything you would not want to share.'
+                                : 'How Google handles it depends on your API key’s plan.'}
+                        </p>
                         <div className="grid grid-cols-1 gap-2">
                             {quickPrompts.map((prompt, i) => (
                                 <button
