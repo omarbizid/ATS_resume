@@ -1,7 +1,8 @@
 import { useId, useLayoutEffect, useRef, useState } from 'react';
 import type { CVLanguage } from '../../types';
 
-const FIELD = 'w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition disabled:opacity-50';
+// Width is set per use: a shared w-full would fight the fixed width of the year box.
+const FIELD = 'bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition disabled:opacity-50';
 
 interface BulletInputProps {
     value: string;
@@ -32,7 +33,7 @@ export function BulletInput({ value, onChange, placeholder, label }: BulletInput
                 // A bullet is one paragraph: Enter and pasted line breaks must not split it.
                 onChange={(e) => onChange(e.target.value.replace(/\s*[\r\n]+\s*/g, ' '))}
                 onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
-                className={`${FIELD} block resize-none overflow-hidden`}
+                className={`${FIELD} w-full block resize-none overflow-hidden`}
             />
             {length > 120 && (
                 <p className={`mt-1 text-xs text-right ${length > 200 ? 'text-amber-400' : 'text-zinc-500'}`}>
@@ -99,14 +100,14 @@ export function DateInput({ label, value, onChange, language }: DateInputProps) 
                 </button>
             </div>
             {textMode ? (
-                <input value={value} onChange={(e) => onChange(e.target.value)} aria-label={label} placeholder="e.g. Sep 2024" className={FIELD} />
+                <input value={value} onChange={(e) => onChange(e.target.value)} aria-label={label} placeholder="e.g. Sep 2024" className={`${FIELD} w-full`} />
             ) : (
                 <div className="flex gap-1.5">
                     <select
                         value={parsed?.month ?? ''}
                         onChange={(e) => compose(e.target.value === '' ? null : Number(e.target.value), parsed?.year ?? '')}
                         aria-label={`${label} month`}
-                        className={`${FIELD} px-2 min-w-0`}
+                        className={`${FIELD} px-2 flex-1 min-w-0`}
                     >
                         <option value="">Month</option>
                         {MONTH_LABELS[language].map((m, i) => <option key={m} value={i}>{m}</option>)}
