@@ -252,26 +252,29 @@
 /* Designed resume: fixed A4 geometry in both preview and PDF. */
 .style-choice { flex: 1; padding: 9px 10px; border: 1px solid #3f3f46; border-radius: 8px; font-size: 12px; color: #d4d4d8; }
 .style-choice-active { background: #1e3a5f; border-color: #60a5fa; color: white; }
-.designed-page { padding: 12mm; font-family: Arial, Helvetica, sans-serif; overflow-wrap: anywhere; }
-.designed-header { display: flex; justify-content: space-between; align-items: center; gap: 9mm; border-bottom: 3px solid var(--resume-accent); padding-bottom: 6mm; margin-bottom: 6mm; break-inside: avoid; }
+.designed-page { padding: 10mm 11mm; font-family: Arial, Helvetica, sans-serif; overflow-wrap: anywhere; }
+.designed-header { display: flex; justify-content: space-between; align-items: center; gap: 7mm; border-bottom: 2px solid var(--resume-accent); padding-bottom: 4mm; margin-bottom: 4mm; break-inside: avoid; }
 .designed-header > div { min-width: 0; }
-.designed-eyebrow { font-size: 8pt; letter-spacing: .22em; color: var(--resume-accent); font-weight: bold; margin-bottom: 4mm; }
-.designed-header h1 { font-family: Georgia, serif; font-size: 29pt; line-height: 1.12; color: #182c32; margin: 0; }
-.designed-title { font-size: 12pt; color: var(--resume-accent); margin-top: 3mm; }
-.designed-photo { width: 32mm; height: 38mm; flex-shrink: 0; object-fit: cover; border-radius: 3mm; }
+.designed-eyebrow { display: none; }
+.designed-header h1 { font-family: Georgia, serif; font-size: 25pt; line-height: 1.08; color: #182c32; margin: 0; }
+.designed-title { font-size: 11pt; line-height: 1.3; color: var(--resume-accent); margin-top: 2mm; }
+.designed-photo { width: 25mm; height: 30mm; flex-shrink: 0; object-fit: cover; border-radius: 2mm; }
 .designed-columns { display: flow-root; }
-.designed-sidebar { float: left; width: 49mm; background: #f1f4f4; border-top: 3px solid var(--resume-accent); padding: 5mm; }
-.designed-main { margin-left: 58mm; min-width: 0; }
-.designed-contact p { font-size: 9pt; line-height: 1.6; margin: 2mm 0; }
-.designed-page .cv-heading-classic { color: var(--resume-accent); font-size: 9pt; letter-spacing: .14em; margin-top: 4mm; margin-bottom: 3mm; break-after: avoid; }
+.designed-sidebar { float: left; width: 47mm; background: #f1f4f4; border-top: 2px solid var(--resume-accent); padding: 4mm; }
+.designed-main { margin-left: 54mm; min-width: 0; }
+.designed-contact p { font-size: 9pt; line-height: 1.4; margin: 1mm 0; }
+.designed-page .cv-heading-classic { color: var(--resume-accent); font-size: 9pt; letter-spacing: .1em; margin-top: 3mm; margin-bottom: 1.5mm; break-after: avoid; }
 .designed-page .cv-divider { display: none; }
-.designed-page .cv-entry { margin-top: 4mm; }
+.designed-page .cv-entry { margin-top: 2.5mm; }
 .designed-page .cv-entry-header { display: block; }
-.designed-page .cv-entry-date { display: block; margin: 1mm 0; font-size: 8.5pt; white-space: normal; color: var(--resume-accent); }
-.designed-page .cv-text, .designed-page .cv-list li, .designed-page .cv-entry-subtitle { font-size: 9pt; line-height: 1.55; }
-.designed-page .cv-entry-title { font-size: 10pt; }
+.designed-page .cv-entry-date { display: block; margin: .5mm 0; font-size: 8.5pt; line-height: 1.3; white-space: normal; color: var(--resume-accent); }
+.designed-page .cv-text, .designed-page .cv-list li, .designed-page .cv-entry-subtitle { font-size: 9pt; line-height: 1.4; }
+.designed-page .cv-entry-title { font-size: 10pt; line-height: 1.3; }
+.designed-page .cv-list { margin-top: 2px; }
+.designed-page .cv-list li { margin-bottom: 1px; padding-left: 2px; }
+.designed-main > .space-y-2 > div:first-child > .cv-heading-classic,
 .designed-sidebar .cv-heading-classic:first-child { margin-top: 0; }
-.designed-sidebar .space-y-2 > div { margin-top: 6mm; }
+.designed-sidebar .space-y-2 > div { margin-top: 4mm; }
 /* Real list markers survive the computed-style PDF export. */
 .cv-list { list-style: disc; }
 .cv-list li::before { content: none; }
@@ -282,5 +285,6 @@
   #cv-preview { transform: none !important; }
   #root, #root > .h-screen { height: auto !important; }
   .designed-page .cv-heading-classic { color: var(--resume-accent) !important; }
+  .designed-page { padding: 10mm 11mm !important; }
 }
 @media print { .no-print { display: none !important; } }
