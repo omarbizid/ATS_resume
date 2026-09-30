@@ -6,11 +6,19 @@ import Preview from './components/preview/Preview';
 import ATSChecker from './components/ats/ATSChecker';
 import AIChatbot from './components/chat/AIChatbot';
 import WelcomeDialog from './components/WelcomeDialog';
+import { openEditorSection, type EditorTarget } from './components/editor/editorNav';
 
 export default function App() {
   const [showATS, setShowATS] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [mobileView, setMobileView] = useState<'editor' | 'preview'>('editor');
+
+  // "Fix this" in the ATS checker: on narrow screens the checker covers the editor, so close it first.
+  const jumpToEditor = (target: EditorTarget) => {
+    setMobileView('editor');
+    if (window.matchMedia('(max-width: 1023px)').matches) setShowATS(false);
+    setTimeout(() => openEditorSection(target), 0);
+  };
 
   return (
     <CVProvider>
@@ -49,12 +57,13 @@ export default function App() {
                 <h2 className="text-sm font-semibold text-zinc-200">ATS Compatibility</h2>
                 <button
                   onClick={() => setShowATS(false)}
+                  aria-label="Close ATS check"
                   className="text-zinc-500 hover:text-zinc-300 transition"
                 >
                   &times;
                 </button>
               </div>
-              <ATSChecker />
+              <ATSChecker onJump={jumpToEditor} />
             </div>
           )}
 
@@ -74,12 +83,13 @@ export default function App() {
                 <h2 className="text-sm font-semibold text-zinc-200">ATS Compatibility</h2>
                 <button
                   onClick={() => setShowATS(false)}
+                  aria-label="Close ATS check"
                   className="text-zinc-400 hover:text-zinc-200 transition text-lg"
                 >
                   &times;
                 </button>
               </div>
-              <ATSChecker />
+              <ATSChecker onJump={jumpToEditor} />
             </div>
           </div>
         )}
@@ -92,6 +102,7 @@ export default function App() {
                 <h2 className="text-sm font-semibold text-zinc-200">✨ AI Assistant</h2>
                 <button
                   onClick={() => setShowChat(false)}
+                  aria-label="Close AI assistant"
                   className="text-zinc-400 hover:text-zinc-200 transition text-lg"
                 >
                   &times;
