@@ -1,6 +1,6 @@
-# ATS CV Builder
+# CV Studio — ATS & Designed Resumes
 
-A modern, ATS-friendly CV builder built with React + TypeScript + Vite + Tailwind CSS. Create resumes that reliably pass Applicant Tracking Systems (ATS).
+A modern, ATS-friendly CV builder built with React + TypeScript + Vite + Tailwind CSS. Create ATS-oriented resumes or a designed resume with an optional portrait.
 
 ## Features
 
@@ -12,6 +12,18 @@ A modern, ATS-friendly CV builder built with React + TypeScript + Vite + Tailwin
 - **Auto-Save**: localStorage persistence — your work is saved automatically
 - **Section Reordering**: Reorder and toggle visibility of CV sections
 - **Sample Data**: Pre-loaded student and junior developer CV samples
+
+## Designed resumes and photos
+
+1. Choose **Designed resume** in Resume style or the template menu. The current CV is converted instantly using the same content, including imported ATS JSON files.
+2. Choose a teal, navy, burgundy or graphite accent.
+3. Upload an optional JPG, PNG or WebP portrait (up to 10 MB). Adjust its vertical position or remove it. Images are resized locally to a maximum of 800 pixels and stored with the CV.
+4. Export PDF to print the styled layout with selectable text and the photo. Enable background graphics if your browser omits the sidebar shading.
+5. Switch back to Classic ATS or Minimal ATS whenever needed. The portrait remains saved but is not rendered in ATS layouts.
+
+The designed layout puts contact details, skills, certifications and languages in a sidebar. Section order applies within each column; section visibility and English/French headings remain supported. It is intended for direct sharing rather than automated application portals. This is a styled template, not a freeform canvas editor.
+
+Auto-save and JSON exports include the portrait. Photos are excluded from AI assistant requests. If browser storage is full or unavailable, the app shows an alert so you can export a JSON backup. The responsive preview shows the complete document; PDF printing determines final A4 page breaks.
 
 ## Install & Run
 
@@ -59,7 +71,7 @@ The exported PDF will contain:
 
 ## Template Rules
 
-Templates only change typography and spacing. Both templates:
+The two ATS templates:
 - Use single-column layout
 - Use Arial/system fonts
 - Render skills as plain text lists (not tags/badges)
@@ -120,3 +132,7 @@ src/
     export/
       ExportControls.tsx      # PDF + JSON export/import
 ```
+
+## Regression checks
+
+Run `npm run build` and `npm run lint`. For the browser regression check, run `npx playwright install chromium`, start `npm run dev` in another terminal, then run `npm run test:e2e`. You can set `BROWSER_CHANNEL=msedge` to use an installed Edge browser, or `TEST_URL` for another local server URL. Screenshots and a PDF are written to the ignored `test-results/` directory. The check covers conversion without content loss, photo upload/removal, persistence, invalid files, ATS switching, PDF image loading and bullet markers, JSON round-trips, legacy JSON migration, and mobile preview.

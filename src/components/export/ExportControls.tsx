@@ -41,12 +41,16 @@ export default function ExportControls() {
 
     // Remove Tailwind/app class names — all styling is now inline
     clone.querySelectorAll('*').forEach((el) => {
+      if ((el as HTMLElement).style.display === 'grid') (el as HTMLElement).style.gridTemplateRows = 'auto';
+      (el as HTMLElement).style.height = el.tagName === 'IMG' ? (el as HTMLElement).style.height : 'auto';
       (el as HTMLElement).removeAttribute('class');
     });
     clone.removeAttribute('class');
     clone.removeAttribute('id');
 
     // Force wrapper styles for A4
+    clone.style.transform = 'none';
+    clone.style.height = 'auto';
     clone.style.width = '210mm';
     clone.style.minHeight = '297mm';
     clone.style.background = 'white';
@@ -58,7 +62,7 @@ export default function ExportControls() {
 <html>
 <head>
 <meta charset="utf-8">
-<title>CV - ${cvData.personal.fullName || 'Export'}</title>
+<title>Resume export</title>
 <style>
   @page { size: A4; margin: 0; }
   html, body {
@@ -86,12 +90,11 @@ ${clone.outerHTML}
     printWindow.document.write(htmlContent);
     printWindow.document.close();
 
-    // Wait for the document to fully load, then trigger print
-    printWindow.addEventListener('load', () => {
-      setTimeout(() => {
-        printWindow.print();
-      }, 300);
-    });
+    // Wait for portraits to decode before opening the print dialog.
+    printWindow.document.title = 'CV - ' + (cvData.personal.fullName || 'Export');
+    Promise.all(Array.from(printWindow.document.images).map(img => img.decode().catch(() => undefined)))
+      .then(() => printWindow.document.fonts.ready)
+      .then(() => { if (!printWindow.closed) printWindow.print(); });
   };
 
   const handleExportJSON = () => {

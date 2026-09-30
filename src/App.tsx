@@ -26,7 +26,7 @@ export default function App() {
         <div className="flex-1 flex overflow-hidden">
           {/* Editor Panel */}
           <div
-            className={`w-full sm:w-[420px] lg:w-[480px] flex-shrink-0 border-r border-zinc-800 p-4 overflow-hidden ${mobileView !== 'editor' ? 'hidden sm:block' : ''
+            className={`no-print w-full sm:w-[420px] lg:w-[480px] flex-shrink-0 border-r border-zinc-800 p-4 overflow-hidden ${mobileView !== 'editor' ? 'hidden sm:block' : ''
               }`}
           >
             <Editor />
@@ -34,7 +34,7 @@ export default function App() {
 
           {/* Preview Panel */}
           <div
-            className={`flex-1 overflow-hidden ${mobileView !== 'preview' ? 'hidden sm:block' : ''
+            className={`preview-panel flex-1 overflow-hidden ${mobileView !== 'preview' ? 'hidden sm:block' : ''
               }`}
           >
             <Preview />
