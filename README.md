@@ -136,6 +136,18 @@ src/
       ExportControls.tsx      # PDF + JSON export/import
 ```
 
+## Hosted AI server (Cloudflare Worker)
+
+The live site's AI assistant runs through a free Cloudflare Worker in `worker/`, deployed at https://cv-studio-ai.cvstudio.workers.dev (set in `.env.production`). It keeps the Gemini API key as a Cloudflare secret, so visitors don't need their own key; they can still switch to their own key in the assistant panel.
+
+- Only requests from the site's own origins (`ALLOWED_ORIGINS` in `worker/wrangler.toml`) are accepted, with size limits and 10 requests per minute per visitor.
+- Only the free-tier Flash models are used (`ALLOWED_MODELS`). The free Gemini quota is shared by all visitors.
+- Deploy code changes: `cd worker && npm install && npx wrangler deploy`
+- Replace the Gemini key: `cd worker && npx wrangler secret put GEMINI_API_KEY`
+- Watch live logs: `cd worker && npx wrangler tail`
+
+For local development you can instead run the Express proxy (`cd server && npm run dev`) or use your own key.
+
 ## Regression checks
 
 Run `npm run build` and `npm run lint`. For the browser regression check, run `npx playwright install chromium`, start `npm run dev` in another terminal, then run `npm run test:e2e`. You can set `BROWSER_CHANNEL=msedge` to use an installed Edge browser, or `TEST_URL` for another local server URL. Screenshots and a PDF are written to the ignored `test-results/` directory. The check covers conversion without content loss, photo upload/removal, persistence, invalid files, ATS switching, PDF image loading and bullet markers, JSON round-trips, legacy JSON migration, and mobile preview.

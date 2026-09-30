@@ -28,3 +28,7 @@ server/node_modules
 *.sw?
 
 /test-results/
+
+# Cloudflare Worker local files
+worker/.dev.vars
+worker/.wrangler

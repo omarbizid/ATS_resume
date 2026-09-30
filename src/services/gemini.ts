@@ -1,6 +1,9 @@
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
-const PROXY_URL = '/api/ai';
-const PROXY_HEALTH_URL = '/api/ai/health';
+// The hosted AI server (the Cloudflare Worker in worker/), set in .env.production.
+// Empty means the local server started with `cd server && npm run dev`, reached through Vite's /api proxy.
+const PROXY_BASE: string = import.meta.env.VITE_AI_PROXY_URL ?? '';
+const PROXY_URL = `${PROXY_BASE}/api/ai`;
+const PROXY_HEALTH_URL = `${PROXY_BASE}/api/ai/health`;
 const STORAGE_KEY = 'cv-builder-gemini-key';
 const MODEL_KEY = 'cv-builder-gemini-model';
 const PROXY_STATUS_KEY = 'cv-builder-proxy-available';
@@ -50,8 +53,8 @@ let proxyAvailable = false;
 export async function checkProxyAvailable(): Promise<boolean> {
     if (proxyChecked) return proxyAvailable;
 
-    // The proxy only runs next to the local dev server; skip a request that would 404 on GitHub Pages.
-    if (!['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+    // Without a hosted server, the proxy only runs next to the local dev server; skip a request that would 404.
+    if (!PROXY_BASE && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
         proxyChecked = true;
         return false;
     }
@@ -65,7 +68,7 @@ export async function checkProxyAvailable(): Promise<boolean> {
     }
 
     try {
-        const res = await fetch(PROXY_HEALTH_URL, { signal: AbortSignal.timeout(2000) });
+        const res = await fetch(PROXY_HEALTH_URL, { signal: AbortSignal.timeout(4000) });
         const data = await res.json();
         proxyAvailable = data.status === 'ok';
     } catch {
