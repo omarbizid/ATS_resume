@@ -26,13 +26,15 @@ app.post('/api/ai', async (req, res) => {
     try {
         const { messages = [], cvJson, language = 'en' } = req.body;
 
-        if (!cvJson) {
+        if (!cvJson && typeof req.body.systemInstruction !== 'string') {
             return res.status(400).json({ error: 'cvJson is required' });
         }
 
         const langLabel = language === 'fr' ? 'French' : 'English';
 
-        const systemInstruction = `You are a professional CV/resume assistant embedded in an ATS-friendly CV Builder app.
+        // The app sends its own prompt, which includes the CV_UPDATE format used to
+        // apply changes; the prompt below is kept for older clients.
+        const systemInstruction = typeof req.body.systemInstruction === 'string' ? req.body.systemInstruction : `You are a professional CV/resume assistant embedded in an ATS-friendly CV Builder app.
 Your job is to help the user write, improve, and fill out their CV.
 The CV language is set to ${langLabel}, so produce all CV content suggestions in ${langLabel}.
 Reply in the same language the user writes to you.
@@ -56,11 +58,11 @@ Guidelines:
         }));
 
         const model = req.body.model || 'gemini-2.0-flash-lite';
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
 
         const geminiRes = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
             body: JSON.stringify({
                 system_instruction: { parts: [{ text: systemInstruction }] },
                 contents,

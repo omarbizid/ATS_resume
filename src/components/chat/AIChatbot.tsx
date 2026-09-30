@@ -73,6 +73,33 @@ Guidelines:
 
 // --- Parse CV_UPDATE blocks from AI response ---
 
+// The backend proxy only exists when running the app locally.
+const IS_LOCAL_DEV = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+/** Sections the AI may change, with the names shown to the user. */
+const EDITABLE_SECTIONS: Record<string, string> = {
+    personal: 'Personal information',
+    summary: 'Summary',
+    experience: 'Work experience',
+    education: 'Education',
+    skillGroups: 'Skills',
+    certifications: 'Certifications',
+    languages: 'Languages',
+    extracurriculars: 'Extracurriculars',
+    projects: 'Projects',
+};
+
+// AI output is untrusted: only CV content may change, never settings, the photo or object internals.
+function isEditablePath(path: unknown): path is string {
+    if (typeof path !== 'string') return false;
+    const keys = path.split('.');
+    return Object.hasOwn(EDITABLE_SECTIONS, keys[0]) && keys.every((k) => k !== '' && k !== '__proto__' && k !== 'prototype' && k !== 'constructor');
+}
+
+function changedSections(updates: CVUpdate[]): string {
+    return [...new Set(updates.map((u) => EDITABLE_SECTIONS[u.path.split('.')[0]]))].join(', ');
+}
+
 function parseUpdates(text: string): { cleanText: string; updates: CVUpdate[] } {
     const updates: CVUpdate[] = [];
     let cleanText = text;
@@ -83,7 +110,7 @@ function parseUpdates(text: string): { cleanText: string; updates: CVUpdate[] } 
     while ((match = regex.exec(text)) !== null) {
         try {
             const parsed = JSON.parse(match[1].trim());
-            if (parsed.path && parsed.value !== undefined) {
+            if (isEditablePath(parsed.path) && parsed.value !== undefined) {
                 updates.push({ path: parsed.path, value: parsed.value });
             }
         } catch {
@@ -178,7 +205,8 @@ export default function AIChatbot() {
                     allMessages,
                     { ...cvData, design: undefined },
                     cvData.cvLanguage ?? 'en',
-                    modelId
+                    modelId,
+                    buildSystemPrompt(cvData)
                 );
             } else {
                 const history = messages.map((m) => ({
@@ -252,10 +280,14 @@ export default function AIChatbot() {
                         <div className="text-3xl">🔑</div>
                         <h3 className="text-sm font-semibold text-zinc-200">Enter your Gemini API Key</h3>
                         <p className="text-xs text-zinc-400 leading-relaxed">
-                            The backend proxy is not running. You can either start it
-                            (<code className="text-zinc-300">cd server && npm run dev</code>)
-                            or enter your API key below.
+                            The assistant uses Google Gemini with your own free API key. The key is saved only in this
+                            browser, and your CV text (not your photo) is sent to Google when you ask a question.
                         </p>
+                        {IS_LOCAL_DEV && (
+                            <p className="text-xs text-zinc-400 leading-relaxed">
+                                Or start the backend proxy (<code className="text-zinc-300">cd server && npm run dev</code>) to use a server-side key.
+                            </p>
+                        )}
                         <p className="text-xs text-zinc-400 leading-relaxed">
                             Get a free key from{' '}
                             <a
@@ -327,7 +359,7 @@ export default function AIChatbot() {
             <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
                 {messages.length === 0 && (
                     <div className="space-y-3 pt-4">
-                        <p className="text-xs text-zinc-400 text-center">Ask the AI to help you fill or improve your CV. Changes will be applied automatically.</p>
+                        <p className="text-xs text-zinc-400 text-center">Ask the AI to help you fill or improve your CV. Changes are applied automatically, and you can undo them.</p>
                         <div className="grid grid-cols-1 gap-2">
                             {quickPrompts.map((prompt, i) => (
                                 <button
@@ -358,7 +390,7 @@ export default function AIChatbot() {
                         {msg.role === 'model' && appliedUpdates.has(i) && (
                             <div className="flex justify-start mt-1 ml-1">
                                 <span className="text-[10px] text-emerald-400 flex items-center gap-1">
-                                    ✓ Changes applied to your CV
+                                    ✓ Updated: {changedSections(pendingUpdates.get(i) ?? [])}
                                 </span>
                             </div>
                         )}

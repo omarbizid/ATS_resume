@@ -41,6 +41,8 @@ type Action =
 
 function setNestedField(obj: CVData, path: string, value: unknown): CVData {
     const keys = path.split('.');
+    // Paths can come from AI output; never let them reach object internals.
+    if (keys.some((k) => k === '__proto__' || k === 'prototype' || k === 'constructor')) return obj;
     const result = JSON.parse(JSON.stringify(obj)) as Record<string, unknown>;
     let current: Record<string, unknown> = result;
     for (let i = 0; i < keys.length - 1; i++) {
