@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useCV } from '../../context/CVContext';
 import DesignEditor from './DesignEditor';
 import PersonalInfoEditor from './PersonalInfoEditor';
@@ -11,6 +11,7 @@ import LanguagesEditor from './LanguagesEditor';
 import ExtracurricularsEditor from './ExtracurricularsEditor';
 import ProjectsEditor from './ProjectsEditor';
 import SectionReorder from './SectionReorder';
+import { onOpenEditorSection } from './editorNav';
 import type { SectionKey } from '../../types';
 
 const SECTION_EDITORS: Record<SectionKey, { label: string; component: React.FC }> = {
@@ -30,6 +31,16 @@ export default function Editor() {
         new Set(['personal', 'summary', 'experience'])
     );
     const [showReorder, setShowReorder] = useState(false);
+
+    // Other panels (e.g. the ATS checker) can ask to open a section and bring it into view.
+    useEffect(() => onOpenEditorSection((target) => {
+        setOpenSections((prev) => new Set(prev).add(target));
+        requestAnimationFrame(() => {
+            const el = document.getElementById(`editor-${target}`);
+            el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            el?.querySelector<HTMLElement>('input, textarea, select')?.focus({ preventScroll: true });
+        });
+    }), []);
 
     // Drag state
     const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -95,15 +106,18 @@ export default function Editor() {
     return (
         <div className="h-full overflow-y-auto pr-1 custom-scrollbar">
             <div className="space-y-3 pb-8">
-                <DesignEditor />
+                <div id="editor-design" className="scroll-mt-2">
+                    <DesignEditor />
+                </div>
                 {/* Personal Info - always first, not draggable */}
-                <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl overflow-hidden">
+                <div id="editor-personal" className="scroll-mt-2 bg-zinc-900/80 border border-zinc-800 rounded-xl overflow-hidden">
                     <button
                         onClick={() => toggleSection('personal')}
+                        aria-expanded={openSections.has('personal')}
                         className="w-full flex items-center justify-between px-4 py-3 hover:bg-zinc-800/50 transition"
                     >
                         <span className="text-sm font-semibold text-zinc-200">Personal Information</span>
-                        <span className="text-zinc-500 text-xs">{openSections.has('personal') ? '−' : '+'}</span>
+                        <span className="text-zinc-500 text-xs" aria-hidden="true">{openSections.has('personal') ? '−' : '+'}</span>
                     </button>
                     {openSections.has('personal') && (
                         <div className="px-4 pb-4">
@@ -123,29 +137,31 @@ export default function Editor() {
                     return (
                         <div
                             key={section.key}
+                            id={`editor-${section.key}`}
                             draggable
                             onDragStart={(e) => handleDragStart(e, index)}
                             onDragOver={(e) => handleDragOver(e, index)}
                             onDragLeave={handleDragLeave}
                             onDrop={(e) => handleDrop(e, index)}
                             onDragEnd={handleDragEnd}
-                            className={`bg-zinc-900/80 border rounded-xl overflow-hidden transition-all duration-150 ${isDragOver && !isDragging
+                            className={`scroll-mt-2 bg-zinc-900/80 border rounded-xl overflow-hidden transition-all duration-150 ${isDragOver && !isDragging
                                     ? 'border-blue-500 ring-2 ring-blue-500/30'
                                     : 'border-zinc-800'
                                 } ${isDragging ? 'opacity-40' : ''}`}
                         >
                             <button
                                 onClick={() => toggleSection(section.key)}
+                                aria-expanded={openSections.has(section.key)}
                                 className="w-full flex items-center justify-between px-4 py-3 hover:bg-zinc-800/50 transition cursor-grab active:cursor-grabbing"
                             >
                                 <div className="flex items-center gap-2">
-                                    <span className="text-zinc-600 text-xs select-none" title="Drag to reorder">⠿</span>
+                                    <span className="text-zinc-600 text-xs select-none" title="Drag to reorder" aria-hidden="true">⠿</span>
                                     <span className="text-sm font-semibold text-zinc-200">{editor.label}</span>
                                     {!section.visible && (
-                                        <span className="text-[10px] bg-zinc-700 text-zinc-400 px-1.5 py-0.5 rounded">Hidden</span>
+                                        <span className="text-xs bg-zinc-700 text-zinc-400 px-1.5 py-0.5 rounded">Hidden</span>
                                     )}
                                 </div>
-                                <span className="text-zinc-500 text-xs">{openSections.has(section.key) ? '−' : '+'}</span>
+                                <span className="text-zinc-500 text-xs" aria-hidden="true">{openSections.has(section.key) ? '−' : '+'}</span>
                             </button>
                             {openSections.has(section.key) && (
                                 <div className="px-4 pb-4">
@@ -160,10 +176,11 @@ export default function Editor() {
                 <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl overflow-hidden">
                     <button
                         onClick={() => setShowReorder(!showReorder)}
+                        aria-expanded={showReorder}
                         className="w-full flex items-center justify-between px-4 py-3 hover:bg-zinc-800/50 transition"
                     >
                         <span className="text-sm font-semibold text-zinc-200">Section Order & Visibility</span>
-                        <span className="text-zinc-500 text-xs">{showReorder ? '−' : '+'}</span>
+                        <span className="text-zinc-500 text-xs" aria-hidden="true">{showReorder ? '−' : '+'}</span>
                     </button>
                     {showReorder && (
                         <div className="px-4 pb-4">

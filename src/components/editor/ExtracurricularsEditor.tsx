@@ -1,4 +1,5 @@
 import { useCV } from '../../context/CVContext';
+import { BulletInput } from './fields';
 import type { ExtracurricularItem } from '../../types';
 import { v4 } from '../../data/uuid';
 
@@ -12,7 +13,7 @@ export default function ExtracurricularsEditor() {
     };
 
     const removeItem = (index: number) => {
-        updateField('extracurriculars', items.filter((_, i) => i !== index));
+        updateField('extracurriculars', items.filter((_, i) => i !== index), 'Activity removed');
     };
 
     const updateBullet = (itemIndex: number, bulletIndex: number, value: string) => {
@@ -49,9 +50,9 @@ export default function ExtracurricularsEditor() {
                     <div className="flex items-center justify-between">
                         <span className="text-xs text-zinc-500 font-medium">Activity {idx + 1}</span>
                         <div className="flex gap-1">
-                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up">&uarr;</button>
-                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down">&darr;</button>
-                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove">&times;</button>
+                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up">&uarr;</button>
+                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down">&darr;</button>
+                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove">&times;</button>
                         </div>
                     </div>
                     <div>
@@ -67,10 +68,10 @@ export default function ExtracurricularsEditor() {
                         </div>
                         {item.bullets.map((b, bi) => (
                             <div key={bi} className="flex gap-2 mb-2">
-                                <span className="text-zinc-600 mt-2 text-sm">•</span>
-                                <input value={b} onChange={(e) => updateBullet(idx, bi, e.target.value)} placeholder={`Describe contribution ${bi + 1}`} className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
+                                <span className="text-zinc-600 mt-2 text-sm" aria-hidden="true">•</span>
+                                <BulletInput value={b} onChange={(v) => updateBullet(idx, bi, v)} placeholder={`Describe contribution ${bi + 1}`} label={`Bullet ${bi + 1}`} />
                                 {item.bullets.length > 1 && (
-                                    <button onClick={() => removeBullet(idx, bi)} className="text-zinc-500 hover:text-red-400 px-1 transition">&times;</button>
+                                    <button onClick={() => removeBullet(idx, bi)} aria-label={`Remove bullet ${bi + 1}`} className="text-zinc-500 hover:text-red-400 px-1 transition">&times;</button>
                                 )}
                             </div>
                         ))}

@@ -68,7 +68,7 @@ export default function DesignEditor() {
                         <label className="block text-xs text-zinc-300">Photo position
                             <input aria-label="Photo position" type="range" min="0" max="100" value={cvData.design.photoPosition ?? 50} onChange={e => updateField('design.photoPosition', Number(e.target.value))} className="block w-full mt-1" />
                         </label>
-                        <button className="text-xs text-red-300" onClick={() => { request.current++; updateField('design.photo', ''); }}>Remove photo</button>
+                        <button className="text-xs text-red-300" onClick={() => { request.current++; updateField('design.photo', '', 'Photo removed'); }}>Remove photo</button>
                     </div>
                 </div>}
                 <p className="text-xs text-zinc-400">Skills, languages and certifications appear in the sidebar. Reordering applies within each column. Use an ATS template for automated application portals.</p>

@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useCV } from '../../context/CVContext';
-import type { CVData } from '../../types';
+import { readCVFile } from '../../data/importCV';
 
 /**
  * Recursively inline all computed styles on an element tree.
@@ -26,8 +26,15 @@ function inlineComputedStyles(source: Element, target: Element) {
   }
 }
 
-export default function ExportControls() {
-  const { cvData, dispatch } = useCV();
+interface Props {
+  /** 'toolbar' shows every export action (JSON ones from the sm breakpoint); 'menu' shows only the JSON ones, full width. */
+  variant?: 'toolbar' | 'menu';
+  /** Called after a menu action, so the menu can close. */
+  onDone?: () => void;
+}
+
+export default function ExportControls({ variant = 'toolbar', onDone }: Props) {
+  const { cvData, loadData, notify } = useCV();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportPDF = () => {
@@ -82,9 +89,14 @@ ${clone.outerHTML}
     // Open a new window for printing — more reliable than iframe
     const printWindow = window.open('', '_blank', 'width=800,height=1100');
     if (!printWindow) {
-      alert('Please allow popups to export PDF.');
+      notify('Allow pop-ups for this site to export the PDF.');
       return;
     }
+
+    // Print settings are the most common export problem, so say them up front.
+    notify(cvData.templateId === 'designed'
+      ? 'In the print dialog choose "Save as PDF", paper A4, margins None, and turn on "Background graphics".'
+      : 'In the print dialog choose "Save as PDF", paper A4 and margins None.');
 
     printWindow.document.open();
     printWindow.document.write(htmlContent);
@@ -105,29 +117,36 @@ ${clone.outerHTML}
     a.download = `cv-${cvData.personal.fullName.replace(/\s+/g, '_').toLowerCase() || 'export'}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    onDone?.();
   };
 
-  const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportJSON = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    // Reset so choosing the same file again still triggers a change.
+    e.target.value = '';
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const data = JSON.parse(ev.target?.result as string) as CVData;
-        if (data.personal && data.sectionSettings) {
-          dispatch({ type: 'LOAD_DATA', payload: data });
-        } else {
-          alert('Invalid CV data file.');
-        }
-      } catch {
-        alert('Failed to parse JSON file.');
-      }
-    };
-    reader.readAsText(file);
-    // Reset input
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    try {
+      loadData(await readCVFile(file), `Imported ${file.name}`);
+    } catch (err) {
+      notify(err instanceof Error ? err.message : 'Could not import this file.');
+    }
+    onDone?.();
   };
 
+  const fileInput = <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportJSON} className="hidden" aria-label="Import JSON file" />;
+
+  if (variant === 'menu') {
+    const item = 'w-full text-left px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-700 transition';
+    return (
+      <>
+        <button onClick={handleExportJSON} className={item}>Export JSON backup</button>
+        <button onClick={() => fileInputRef.current?.click()} className={item}>Import JSON backup</button>
+        {fileInput}
+      </>
+    );
+  }
+
+  const secondary = 'hidden sm:inline-block px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-xs font-medium rounded-lg transition';
   return (
     <div className="flex items-center gap-2">
       <button
@@ -136,22 +155,13 @@ ${clone.outerHTML}
       >
         Export PDF
       </button>
-      <button
-        onClick={handleExportJSON}
-        className="px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-xs font-medium rounded-lg transition"
-      >
+      <button onClick={handleExportJSON} className={secondary}>
         Export JSON
       </button>
-      <label className="px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-xs font-medium rounded-lg transition cursor-pointer">
+      <button onClick={() => fileInputRef.current?.click()} className={secondary}>
         Import JSON
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json"
-          onChange={handleImportJSON}
-          className="hidden"
-        />
-      </label>
+      </button>
+      {fileInput}
     </div>
   );
 }

@@ -22,7 +22,7 @@ export default function LanguagesEditor() {
     };
 
     const removeItem = (index: number) => {
-        updateField('languages', items.filter((_, i) => i !== index));
+        updateField('languages', items.filter((_, i) => i !== index), 'Language removed');
     };
 
     const moveItem = (index: number, direction: 'up' | 'down') => {
@@ -38,9 +38,9 @@ export default function LanguagesEditor() {
                     <div className="flex items-center justify-between mb-3">
                         <span className="text-xs text-zinc-500 font-medium">Language {idx + 1}</span>
                         <div className="flex gap-1">
-                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up">&uarr;</button>
-                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down">&darr;</button>
-                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove">&times;</button>
+                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up">&uarr;</button>
+                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down">&darr;</button>
+                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove">&times;</button>
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">

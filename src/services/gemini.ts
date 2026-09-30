@@ -50,6 +50,12 @@ let proxyAvailable = false;
 export async function checkProxyAvailable(): Promise<boolean> {
     if (proxyChecked) return proxyAvailable;
 
+    // The proxy only runs next to the local dev server; skip a request that would 404 on GitHub Pages.
+    if (!['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+        proxyChecked = true;
+        return false;
+    }
+
     // Quick check from sessionStorage to avoid repeated network calls
     const cached = sessionStorage.getItem(PROXY_STATUS_KEY);
     if (cached !== null) {
@@ -103,12 +109,13 @@ export async function sendMessageViaProxy(
     messages: ChatMessage[],
     cvJson: unknown,
     language: string,
-    model: GeminiModelId
+    model: GeminiModelId,
+    systemInstruction: string
 ): Promise<string> {
     const res = await fetch(PROXY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages, cvJson, language, model }),
+        body: JSON.stringify({ messages, cvJson, language, model, systemInstruction }),
     });
 
     const data = await res.json();
@@ -144,11 +151,12 @@ export async function sendMessageDirect(
         },
     };
 
-    const url = `${GEMINI_API_BASE}/${model}:generateContent?key=${apiKey}`;
+    // The key goes in a header so it never appears in URLs, logs or browser history.
+    const url = `${GEMINI_API_BASE}/${model}:generateContent`;
 
     const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
         body: JSON.stringify(body),
     });
 

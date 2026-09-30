@@ -9,9 +9,21 @@ const browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL || unde
 try {
 const page=await browser.newPage({viewport:{width:1500,height:1000}});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
-await page.goto(process.env.TEST_URL || 'http://127.0.0.1:5173/ATS_resume/');
+const url=process.env.TEST_URL || 'http://127.0.0.1:5173/ATS_resume/';
+await page.goto(url);
+// A first visit shows the welcome dialog; keep the sample for the checks below.
+await page.getByRole('button',{name:/Explore the sample/}).click();
 await page.waitForTimeout(500);
-const original=await page.evaluate(()=>JSON.parse(localStorage.getItem('cv-builder-data')));
+const saved=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('cv-builder-data')));
+const original=await saved();
+// Removing an entry can be undone from the toast and with Ctrl+Z.
+const removeFirstExperience=()=>page.getByText('Experience 1',{exact:true}).locator('xpath=..').locator('[title="Remove"]').click();
+await removeFirstExperience();await page.waitForTimeout(300);
+assert.equal((await saved()).experience.length,original.experience.length-1);
+await page.getByRole('status').getByRole('button',{name:'Undo',exact:true}).click();await page.waitForTimeout(300);
+assert.deepEqual((await saved()).experience,original.experience,'toast undo restores the entry');
+await removeFirstExperience();await page.keyboard.press('Control+z');await page.waitForTimeout(300);
+assert.deepEqual((await saved()).experience,original.experience,'Ctrl+Z restores the entry');
 await page.getByRole('button',{name:'Designed resume',exact:true}).click();
 await page.locator('#cv-preview .designed-page').waitFor();
 const photo=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=180;c.height=240;const x=c.getContext('2d');x.fillStyle='#dfbb95';x.fillRect(0,0,180,240);x.fillStyle='#283c63';x.fillRect(20,140,140,100);x.fillStyle='#a16e44';x.beginPath();x.arc(90,85,47,0,Math.PI*2);x.fill();return c.toDataURL('image/png').split(',')[1]});
@@ -33,6 +45,14 @@ await page.getByLabel('Upload portrait').setInputFiles({name:'bad.txt',mimeType:
 await page.getByRole('alert').filter({hasText:'Choose a JPG'}).waitFor();
 await page.getByRole('button',{name:'ATS Check',exact:true}).click();
 assert.ok(await page.getByText('Designed resumes use columns').first().isVisible());
+// "Fix this" opens the editor where the problem is fixed.
+await page.getByRole('button',{name:'Fix this →'}).first().click();
+await page.waitForFunction(()=>document.getElementById('editor-design')?.contains(document.activeElement));
+// Job description match lists covered and missing terms.
+await page.getByRole('textbox',{name:'Job description',exact:true}).first().fill('We are hiring a React developer with TypeScript and Kubernetes. Kubernetes experience is a plus.');
+assert.ok(await page.getByText(/Your CV mentions \d+ of \d+ key terms/).first().isVisible());
+assert.ok(await page.locator('li',{hasText:/^kubernetes$/}).first().isVisible(),'missing term shown');
+assert.ok(await page.locator('li',{hasText:/^react$/}).first().isVisible(),'found term shown');
 await page.getByRole('button',{name:'ATS Check',exact:true}).click();
 // Capture the actual export window, then generate its PDF with real text and decoded photo.
 await page.context().addInitScript(()=>{window.print=()=>{};});
@@ -66,7 +86,26 @@ await page.locator('input[accept=".json"]').setInputFiles({ name: 'backup.json',
 await page.setViewportSize({width:390,height:844});
 await page.getByRole('button',{name:'Preview',exact:true}).click();
 await page.screenshot({path:'test-results/designed-mobile.png'});
+// On phones the JSON actions live in the "More actions" menu.
+await page.getByRole('button',{name:'More actions'}).click();
+assert.ok(await page.getByRole('button',{name:'Export JSON backup'}).isVisible());
+await page.keyboard.press('Escape');
+assert.equal(await page.getByRole('button',{name:'Export JSON backup'}).count(),0);
+// A new visitor can start from an empty CV.
+const fresh=await browser.newPage();fresh.on('pageerror',e=>errors.push(e.message));
+await fresh.goto(url);await fresh.getByRole('button',{name:/Start from scratch/}).click();await fresh.waitForTimeout(300);
+const blank=await fresh.evaluate(()=>JSON.parse(localStorage.getItem('cv-builder-data')));
+assert.equal(blank.personal.fullName,'');assert.equal(blank.experience[0].role,'');
+await fresh.reload();assert.equal(await fresh.getByRole('dialog').count(),0,'welcome dialog only on first visit');
+// Date picker writes plain text dates; bullets stay one line.
+await fresh.getByLabel('Start date month').first().selectOption({label:'Sep'});
+await fresh.getByLabel('Start date year').first().fill('2024');
+await fresh.getByLabel('Bullet 1').first().fill('Built a tool\nused by 50 people');
+await fresh.waitForTimeout(300);
+const edited=(await fresh.evaluate(()=>JSON.parse(localStorage.getItem('cv-builder-data')))).experience[0];
+assert.equal(edited.startDate,'Sep 2024');
+assert.equal(edited.bullets[0],'Built a tool used by 50 people');
 assert.deepEqual(errors,[]);
-console.log('PASS: conversion, content preservation, photo upload, reload, colour, ATS switch, invalid upload, ATS check, PDF photo/bullets, mobile view.');
+console.log('PASS: welcome dialog, undo toast, Ctrl+Z, blank start, ATS fix link, job match, date picker, bullets, phone menu, conversion, content preservation, photo upload, reload, colour, ATS switch, invalid upload, ATS check, PDF photo/bullets, mobile view.');
 } finally { await browser.close(); }
 })().catch(e=>{console.error(e);process.exit(1)});
