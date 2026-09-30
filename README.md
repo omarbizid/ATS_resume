@@ -11,7 +11,8 @@ A modern, ATS-friendly CV builder built with React + TypeScript + Vite + Tailwin
 - **JSON Import/Export**: Save and load your CV data as JSON files
 - **Auto-Save**: localStorage persistence — your work is saved automatically
 - **Section Reordering**: Reorder and toggle visibility of CV sections
-- **Sample Data**: Pre-loaded student and junior developer CV samples
+- **Sample Data**: Pre-loaded student and junior developer CV samples; first-time visitors choose between a blank CV, the sample or a JSON import
+- **Undo/Redo**: Toolbar buttons and Ctrl+Z / Ctrl+Y (outside text fields); removing entries, loading samples, imports and AI edits show an Undo notification
 
 ## Designed resumes and photos
 

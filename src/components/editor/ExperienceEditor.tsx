@@ -21,7 +21,7 @@ export default function ExperienceEditor() {
     };
 
     const removeItem = (index: number) => {
-        updateField('experience', items.filter((_, i) => i !== index));
+        updateField('experience', items.filter((_, i) => i !== index), 'Experience removed');
     };
 
     const updateItem = (index: number, field: string, value: unknown) => {

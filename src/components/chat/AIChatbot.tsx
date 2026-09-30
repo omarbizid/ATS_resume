@@ -98,8 +98,12 @@ function parseUpdates(text: string): { cleanText: string; updates: CVUpdate[] } 
     return { cleanText, updates };
 }
 
+function describeUpdates(updates: CVUpdate[]): string {
+    return updates.length === 1 ? 'AI updated 1 field' : `AI updated ${updates.length} fields`;
+}
+
 export default function AIChatbot() {
-    const { cvData, updateField } = useCV();
+    const { cvData, updateFields } = useCV();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -151,10 +155,7 @@ export default function AIChatbot() {
         const updates = pendingUpdates.get(messageIndex);
         if (!updates) return;
 
-        for (const update of updates) {
-            updateField(update.path, update.value);
-        }
-
+        updateFields(updates, describeUpdates(updates));
         setAppliedUpdates((prev) => new Set(prev).add(messageIndex));
     };
 
@@ -197,10 +198,8 @@ export default function AIChatbot() {
             if (updates.length > 0) {
                 setPendingUpdates((prev) => new Map(prev).set(newMsgIndex, updates));
 
-                // Auto-apply the updates
-                for (const update of updates) {
-                    updateField(update.path, update.value);
-                }
+                // Auto-apply as one undoable step; the toast offers Undo.
+                updateFields(updates, describeUpdates(updates));
                 setAppliedUpdates((prev) => new Set(prev).add(newMsgIndex));
             }
         } catch (err) {

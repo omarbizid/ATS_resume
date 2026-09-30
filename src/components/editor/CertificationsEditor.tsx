@@ -12,7 +12,7 @@ export default function CertificationsEditor() {
     };
 
     const removeItem = (index: number) => {
-        updateField('certifications', items.filter((_, i) => i !== index));
+        updateField('certifications', items.filter((_, i) => i !== index), 'Certification removed');
     };
 
     const updateItem = (index: number, field: string, value: string) => {

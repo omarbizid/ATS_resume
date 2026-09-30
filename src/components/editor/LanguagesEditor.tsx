@@ -22,7 +22,7 @@ export default function LanguagesEditor() {
     };
 
     const removeItem = (index: number) => {
-        updateField('languages', items.filter((_, i) => i !== index));
+        updateField('languages', items.filter((_, i) => i !== index), 'Language removed');
     };
 
     const moveItem = (index: number, direction: 'up' | 'down') => {

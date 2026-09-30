@@ -9,9 +9,21 @@ const browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL || unde
 try {
 const page=await browser.newPage({viewport:{width:1500,height:1000}});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
-await page.goto(process.env.TEST_URL || 'http://127.0.0.1:5173/ATS_resume/');
+const url=process.env.TEST_URL || 'http://127.0.0.1:5173/ATS_resume/';
+await page.goto(url);
+// A first visit shows the welcome dialog; keep the sample for the checks below.
+await page.getByRole('button',{name:/Explore the sample/}).click();
 await page.waitForTimeout(500);
-const original=await page.evaluate(()=>JSON.parse(localStorage.getItem('cv-builder-data')));
+const saved=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('cv-builder-data')));
+const original=await saved();
+// Removing an entry can be undone from the toast and with Ctrl+Z.
+const removeFirstExperience=()=>page.getByText('Experience 1',{exact:true}).locator('xpath=..').locator('[title="Remove"]').click();
+await removeFirstExperience();await page.waitForTimeout(300);
+assert.equal((await saved()).experience.length,original.experience.length-1);
+await page.getByRole('status').getByRole('button',{name:'Undo',exact:true}).click();await page.waitForTimeout(300);
+assert.deepEqual((await saved()).experience,original.experience,'toast undo restores the entry');
+await removeFirstExperience();await page.keyboard.press('Control+z');await page.waitForTimeout(300);
+assert.deepEqual((await saved()).experience,original.experience,'Ctrl+Z restores the entry');
 await page.getByRole('button',{name:'Designed resume',exact:true}).click();
 await page.locator('#cv-preview .designed-page').waitFor();
 const photo=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=180;c.height=240;const x=c.getContext('2d');x.fillStyle='#dfbb95';x.fillRect(0,0,180,240);x.fillStyle='#283c63';x.fillRect(20,140,140,100);x.fillStyle='#a16e44';x.beginPath();x.arc(90,85,47,0,Math.PI*2);x.fill();return c.toDataURL('image/png').split(',')[1]});
@@ -66,7 +78,13 @@ await page.locator('input[accept=".json"]').setInputFiles({ name: 'backup.json',
 await page.setViewportSize({width:390,height:844});
 await page.getByRole('button',{name:'Preview',exact:true}).click();
 await page.screenshot({path:'test-results/designed-mobile.png'});
+// A new visitor can start from an empty CV.
+const fresh=await browser.newPage();fresh.on('pageerror',e=>errors.push(e.message));
+await fresh.goto(url);await fresh.getByRole('button',{name:/Start from scratch/}).click();await fresh.waitForTimeout(300);
+const blank=await fresh.evaluate(()=>JSON.parse(localStorage.getItem('cv-builder-data')));
+assert.equal(blank.personal.fullName,'');assert.equal(blank.experience[0].role,'');
+await fresh.reload();assert.equal(await fresh.getByRole('dialog').count(),0,'welcome dialog only on first visit');
 assert.deepEqual(errors,[]);
-console.log('PASS: conversion, content preservation, photo upload, reload, colour, ATS switch, invalid upload, ATS check, PDF photo/bullets, mobile view.');
+console.log('PASS: welcome dialog, undo toast, Ctrl+Z, blank start, conversion, content preservation, photo upload, reload, colour, ATS switch, invalid upload, ATS check, PDF photo/bullets, mobile view.');
 } finally { await browser.close(); }
 })().catch(e=>{console.error(e);process.exit(1)});

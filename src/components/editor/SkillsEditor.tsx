@@ -16,7 +16,7 @@ export default function SkillsEditor() {
     };
 
     const removeGroup = (index: number) => {
-        updateField('skillGroups', groups.filter((_, i) => i !== index));
+        updateField('skillGroups', groups.filter((_, i) => i !== index), 'Skill group removed');
     };
 
     const updateCategory = (index: number, value: string) => {

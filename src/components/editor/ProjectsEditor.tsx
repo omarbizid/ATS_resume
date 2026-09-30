@@ -12,7 +12,7 @@ export default function ProjectsEditor() {
     };
 
     const removeItem = (index: number) => {
-        updateField('projects', items.filter((_, i) => i !== index));
+        updateField('projects', items.filter((_, i) => i !== index), 'Project removed');
     };
 
     const updateBullet = (itemIndex: number, bulletIndex: number, value: string) => {

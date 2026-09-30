@@ -5,6 +5,7 @@ import Editor from './components/editor/Editor';
 import Preview from './components/preview/Preview';
 import ATSChecker from './components/ats/ATSChecker';
 import AIChatbot from './components/chat/AIChatbot';
+import WelcomeDialog from './components/WelcomeDialog';
 
 export default function App() {
   const [showATS, setShowATS] = useState(false);
@@ -13,6 +14,7 @@ export default function App() {
 
   return (
     <CVProvider>
+      <WelcomeDialog />
       <div className="h-screen flex flex-col bg-zinc-950 text-zinc-100">
         <Toolbar
           showATS={showATS}

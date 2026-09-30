@@ -21,7 +21,7 @@ export default function EducationEditor() {
     };
 
     const removeItem = (index: number) => {
-        updateField('education', items.filter((_, i) => i !== index));
+        updateField('education', items.filter((_, i) => i !== index), 'Education entry removed');
     };
 
     const updateItem = (index: number, field: string, value: unknown) => {

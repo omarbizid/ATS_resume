@@ -12,7 +12,7 @@ export default function ExtracurricularsEditor() {
     };
 
     const removeItem = (index: number) => {
-        updateField('extracurriculars', items.filter((_, i) => i !== index));
+        updateField('extracurriculars', items.filter((_, i) => i !== index), 'Activity removed');
     };
 
     const updateBullet = (itemIndex: number, bulletIndex: number, value: string) => {

@@ -1,6 +1,5 @@
-import { useRef } from 'react';
 import { useCV } from '../../context/CVContext';
-import type { CVData } from '../../types';
+import { readCVFile } from '../../data/importCV';
 
 /**
  * Recursively inline all computed styles on an element tree.
@@ -27,8 +26,7 @@ function inlineComputedStyles(source: Element, target: Element) {
 }
 
 export default function ExportControls() {
-  const { cvData, dispatch } = useCV();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { cvData, loadData, notify } = useCV();
 
   const handleExportPDF = () => {
     const cvPreview = document.getElementById('cv-preview');
@@ -82,7 +80,7 @@ ${clone.outerHTML}
     // Open a new window for printing — more reliable than iframe
     const printWindow = window.open('', '_blank', 'width=800,height=1100');
     if (!printWindow) {
-      alert('Please allow popups to export PDF.');
+      notify('Allow pop-ups for this site to export the PDF.');
       return;
     }
 
@@ -107,25 +105,16 @@ ${clone.outerHTML}
     URL.revokeObjectURL(url);
   };
 
-  const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportJSON = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    // Reset so choosing the same file again still triggers a change.
+    e.target.value = '';
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const data = JSON.parse(ev.target?.result as string) as CVData;
-        if (data.personal && data.sectionSettings) {
-          dispatch({ type: 'LOAD_DATA', payload: data });
-        } else {
-          alert('Invalid CV data file.');
-        }
-      } catch {
-        alert('Failed to parse JSON file.');
-      }
-    };
-    reader.readAsText(file);
-    // Reset input
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    try {
+      loadData(await readCVFile(file), `Imported ${file.name}`);
+    } catch (err) {
+      notify(err instanceof Error ? err.message : 'Could not import this file.');
+    }
   };
 
   return (
@@ -145,7 +134,6 @@ ${clone.outerHTML}
       <label className="px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-xs font-medium rounded-lg transition cursor-pointer">
         Import JSON
         <input
-          ref={fileInputRef}
           type="file"
           accept=".json"
           onChange={handleImportJSON}
