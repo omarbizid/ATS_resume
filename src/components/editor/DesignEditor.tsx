@@ -71,7 +71,7 @@ export default function DesignEditor() {
                         <button className="text-xs text-red-300" onClick={() => { request.current++; updateField('design.photo', '', 'Photo removed'); }}>Remove photo</button>
                     </div>
                 </div>}
-                <p className="text-xs text-zinc-400">Skills, languages and certifications appear in the sidebar. Reordering applies within each column. Use an ATS template for automated application portals.</p>
+                <p className="text-xs text-zinc-400">Your photo, contact details, skills, languages and certifications appear in the left sidebar; your name heads the main column. Reordering applies within each column. Use an ATS template for automated application portals.</p>
             </>}
         </section>
     );

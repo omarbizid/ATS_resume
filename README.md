@@ -22,7 +22,7 @@ A modern, ATS-friendly CV builder built with React + TypeScript + Vite + Tailwin
 4. Export PDF to print the styled layout with selectable text and the photo. Enable background graphics if your browser omits the sidebar shading.
 5. Switch back to Classic ATS or Minimal ATS whenever needed. The portrait remains saved but is not rendered in ATS layouts.
 
-The designed layout puts contact details, skills, certifications and languages in a sidebar. Section order applies within each column; section visibility and English/French headings remain supported. It is intended for direct sharing rather than automated application portals. This is a styled template, not a freeform canvas editor.
+The designed layout puts the photo, contact details, skills, certifications and languages in a left sidebar, with the name and title at the top of the main column (no full-width header, so content starts higher on the page). Section order applies within each column; section visibility and English/French headings remain supported. It is intended for direct sharing rather than automated application portals. This is a styled template, not a freeform canvas editor.
 
 Auto-save and JSON exports include the portrait. Photos are excluded from AI assistant requests. If browser storage is full or unavailable, the app shows an alert so you can export a JSON backup. The responsive preview shows the complete document; PDF printing determines final A4 page breaks.
 
