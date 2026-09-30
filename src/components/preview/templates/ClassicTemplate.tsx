@@ -3,9 +3,10 @@ import { getTranslations } from '../../../data/translations';
 
 interface Props {
     cvData: CVData;
+    sectionsOnly?: boolean;
 }
 
-export default function ClassicTemplate({ cvData }: Props) {
+export default function ClassicTemplate({ cvData, sectionsOnly = false }: Props) {
     const { personal, summary, experience, education, skillGroups, certifications, languages, extracurriculars, projects } = cvData;
     const sections = [...cvData.sectionSettings].sort((a, b) => a.order - b.order).filter((s) => s.visible);
     const t = getTranslations(cvData.cvLanguage ?? 'en');
@@ -192,6 +193,8 @@ export default function ClassicTemplate({ cvData }: Props) {
                 return null;
         }
     };
+
+    if (sectionsOnly) return <div className="space-y-2">{sections.map((s) => renderSection(s.key))}</div>;
 
     return (
         <div className="cv-page font-['Arial',_'Helvetica',_sans-serif]">

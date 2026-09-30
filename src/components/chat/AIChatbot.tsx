@@ -35,7 +35,7 @@ The CV language is set to ${lang}, so produce all CV content suggestions in ${la
 Reply in the same language the user writes to you.
 
 Current CV data (JSON):
-${JSON.stringify(cvData, null, 2)}
+${JSON.stringify({ ...cvData, design: undefined }, null, 2)}
 
 IMPORTANT — APPLYING CHANGES:
 When the user asks you to change, add, improve, or fill a section of their CV, you MUST include a JSON action block so the changes are applied automatically.
@@ -175,7 +175,7 @@ export default function AIChatbot() {
                 const allMessages = [...messages, userMsg];
                 reply = await sendMessageViaProxy(
                     allMessages,
-                    cvData,
+                    { ...cvData, design: undefined },
                     cvData.cvLanguage ?? 'en',
                     modelId
                 );

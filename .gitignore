@@ -26,3 +26,5 @@ server/node_modules
 *.njsproj
 *.sln
 *.sw?
+
+/test-results/

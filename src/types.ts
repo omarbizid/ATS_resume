@@ -87,7 +87,7 @@ export interface SectionSetting {
     order: number;
 }
 
-export type TemplateId = 'classic' | 'minimal';
+export type TemplateId = 'classic' | 'minimal' | 'designed';
 export type CVLanguage = 'en' | 'fr';
 
 export interface CVData {
@@ -103,4 +103,5 @@ export interface CVData {
     sectionSettings: SectionSetting[];
     templateId: TemplateId;
     cvLanguage: CVLanguage;
+    design?: { photo?: string; accent?: string; photoPosition?: number };
 }

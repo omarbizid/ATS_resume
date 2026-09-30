@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useState, type ReactNode } from 'react';
 import type { CVData, CVLanguage, SectionKey, TemplateId } from '../types';
 import { studentCV } from '../data/sampleData';
 
@@ -55,8 +55,13 @@ function setNestedField(obj: CVData, path: string, value: unknown): CVData {
 
 function cvReducer(state: CVData, action: Action): CVData {
     switch (action.type) {
-        case 'LOAD_DATA':
-            return action.payload;
+        case 'LOAD_DATA': {
+            const data = { ...action.payload, projects: action.payload.projects ?? [], cvLanguage: action.payload.cvLanguage ?? 'en' };
+            if (!data.sectionSettings.some(s => s.key === 'projects')) {
+                data.sectionSettings = [...data.sectionSettings, { key: 'projects', label: 'Projects', visible: false, order: Math.max(-1, ...data.sectionSettings.map(s => s.order)) + 1 }];
+            }
+            return data;
+        }
 
         case 'SET_FIELD':
             return setNestedField(state, action.payload.path, action.payload.value);
@@ -123,8 +128,15 @@ export function CVProvider({ children }: { children: ReactNode }) {
         return loadFromStorage() || studentCV;
     });
 
+    const [saveError, setSaveError] = useState(false);
     useEffect(() => {
-        saveToStorage(cvData);
+        const timer = window.setTimeout(() => {
+            try { saveToStorage(cvData); setSaveError(false); }
+            catch { setSaveError(true); }
+        }, 150);
+        const flush = () => { try { saveToStorage(cvData); } catch { /* Banner handles storage errors. */ } };
+        window.addEventListener('pagehide', flush);
+        return () => { clearTimeout(timer); window.removeEventListener('pagehide', flush); };
     }, [cvData]);
 
     const updateField = (path: string, value: unknown) => {
@@ -133,11 +145,14 @@ export function CVProvider({ children }: { children: ReactNode }) {
 
     return (
         <CVContext.Provider value={{ cvData, dispatch, updateField }}>
+            {saveError && <div role="alert" className="no-print bg-amber-950 text-amber-100 p-3 text-sm">Automatic saving is unavailable or storage is full. Export JSON to keep your changes and photo.</div>}
             {children}
         </CVContext.Provider>
     );
 }
 
+// The context hook intentionally shares its provider module.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useCV() {
     const ctx = useContext(CVContext);
     if (!ctx) throw new Error('useCV must be used within CVProvider');

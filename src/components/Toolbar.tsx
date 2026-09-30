@@ -54,17 +54,19 @@ export default function Toolbar({ showATS, onToggleATS, showChat, onToggleChat, 
         <div className="no-print bg-zinc-900 border-b border-zinc-800 px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3">
                 <h1 className="text-base font-bold text-zinc-100 tracking-tight">
-                    <span className="text-blue-400">ATS</span> CV Builder
+                    <span className="text-blue-400">CV</span> Studio
                 </h1>
                 <div className="hidden sm:flex items-center gap-1.5 ml-2">
                     <span className="text-xs text-zinc-500">Template:</span>
                     <select
+                        aria-label="Resume template"
                         value={cvData.templateId}
                         onChange={(e) => dispatch({ type: 'SET_TEMPLATE', payload: e.target.value as TemplateId })}
                         className="bg-zinc-800 border border-zinc-700 rounded-md px-2 py-1 text-xs text-zinc-200 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
                     >
                         <option value="classic">Classic ATS</option>
                         <option value="minimal">Minimal ATS</option>
+                        <option value="designed">Designed resume (photo)</option>
                     </select>
                 </div>
                 <div className="hidden sm:flex items-center gap-1.5">
@@ -106,7 +108,8 @@ export default function Toolbar({ showATS, onToggleATS, showChat, onToggleChat, 
                     className="sm:hidden bg-zinc-800 border border-zinc-700 rounded-md px-2 py-1 text-xs text-zinc-200 focus:outline-none"
                 >
                     <option value="classic">Classic</option>
-                    <option value="minimal">Minimal</option>
+                    <option value="minimal">Minimal ATS</option>
+                    <option value="designed">Designed resume</option>
                 </select>
 
                 {/* Language selector (mobile) */}

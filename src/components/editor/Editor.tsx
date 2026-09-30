@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useCV } from '../../context/CVContext';
+import DesignEditor from './DesignEditor';
 import PersonalInfoEditor from './PersonalInfoEditor';
 import SummaryEditor from './SummaryEditor';
 import ExperienceEditor from './ExperienceEditor';
@@ -94,6 +95,7 @@ export default function Editor() {
     return (
         <div className="h-full overflow-y-auto pr-1 custom-scrollbar">
             <div className="space-y-3 pb-8">
+                <DesignEditor />
                 {/* Personal Info - always first, not draggable */}
                 <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl overflow-hidden">
                     <button
