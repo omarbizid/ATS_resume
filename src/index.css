@@ -1,4 +1,47 @@
 @import "tailwindcss";
+@import "@fontsource-variable/geist";
+
+/* ============================================
+   APP THEME (editor UI only; the CV templates set their own fonts and colours)
+   ============================================ */
+
+@theme {
+  /* Geist for the interface; bundled with the app, no external font request. */
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+
+  /* The single accent: a muted teal matching the designed resume's default colour.
+     Filled buttons use 600/700 so white text keeps AA contrast. */
+  --color-accent-50: #effaf7;
+  --color-accent-100: #d7f0ea;
+  --color-accent-200: #b0e0d5;
+  --color-accent-300: #82c9bb;
+  --color-accent-400: #5aae9f;
+  --color-accent-500: #3f9384;
+  --color-accent-600: #2f776b;
+  --color-accent-700: #275f56;
+  --color-accent-800: #214c46;
+  --color-accent-900: #1c3f3a;
+  --color-accent-950: #0d2421;
+}
+
+@layer base {
+  /* Keyboard users always see where they are. */
+  :where(button, a, select, input, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-accent-400);
+    outline-offset: 2px;
+  }
+  /* A small physical press on every enabled button. */
+  button:not(:disabled):active {
+    transform: translateY(1px);
+  }
+  button {
+    transition-property: color, background-color, border-color, opacity, transform;
+    transition-duration: 180ms;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+}
 
 /* ============================================
    CV PAGE STYLES (Preview & Print)
@@ -250,8 +293,9 @@
   }
 }
 /* Designed resume: fixed A4 geometry in both preview and PDF. */
-.style-choice { flex: 1; padding: 9px 10px; border: 1px solid #3f3f46; border-radius: 8px; font-size: 12px; color: #d4d4d8; }
-.style-choice-active { background: #1e3a5f; border-color: #60a5fa; color: white; }
+.style-choice { flex: 1; padding: 9px 10px; border: 1px solid #3f3f46; border-radius: 8px; font-size: 13px; color: #d4d4d8; }
+.style-choice:not(.style-choice-active):hover { background: #27272a; }
+.style-choice-active { background: color-mix(in srgb, var(--color-accent-500) 15%, transparent); border-color: var(--color-accent-500); color: var(--color-accent-200); font-weight: 500; }
 .designed-page { padding: 10mm 11mm; font-family: Arial, Helvetica, sans-serif; overflow-wrap: anywhere; }
 /* The name heads the main column; the accent rule under it lines up with the sidebar's top border. */
 .designed-header { border-bottom: 2px solid var(--resume-accent); padding-bottom: 3mm; margin-bottom: 3mm; break-inside: avoid; }

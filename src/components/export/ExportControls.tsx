@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { DownloadSimple } from '@phosphor-icons/react';
 import { useCV } from '../../context/CVContext';
 import { readCVFile } from '../../data/importCV';
 
@@ -27,7 +28,7 @@ function inlineComputedStyles(source: Element, target: Element) {
 }
 
 interface Props {
-  /** 'toolbar' shows every export action (JSON ones from the sm breakpoint); 'menu' shows only the JSON ones, full width. */
+  /** 'toolbar' is the Export PDF button; 'menu' is the JSON backup actions, full width. */
   variant?: 'toolbar' | 'menu';
   /** Called after a menu action, so the menu can close. */
   onDone?: () => void;
@@ -136,7 +137,7 @@ ${clone.outerHTML}
   const fileInput = <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportJSON} className="hidden" aria-label="Import JSON file" />;
 
   if (variant === 'menu') {
-    const item = 'w-full text-left px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-700 transition';
+    const item = 'w-full text-left px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800';
     return (
       <>
         <button onClick={handleExportJSON} className={item}>Export JSON backup</button>
@@ -146,22 +147,16 @@ ${clone.outerHTML}
     );
   }
 
-  const secondary = 'hidden sm:inline-block px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-xs font-medium rounded-lg transition';
+  // The toolbar's one primary action; JSON backups live in the File menu.
   return (
-    <div className="flex items-center gap-2">
-      <button
-        onClick={handleExportPDF}
-        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium rounded-lg transition"
-      >
-        Export PDF
-      </button>
-      <button onClick={handleExportJSON} className={secondary}>
-        Export JSON
-      </button>
-      <button onClick={() => fileInputRef.current?.click()} className={secondary}>
-        Import JSON
-      </button>
-      {fileInput}
-    </div>
+    <button
+      onClick={handleExportPDF}
+      aria-label="Export PDF"
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium rounded-lg"
+    >
+      <DownloadSimple />
+      <span className="sm:hidden">PDF</span>
+      <span className="hidden sm:inline">Export PDF</span>
+    </button>
   );
 }

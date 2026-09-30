@@ -5,14 +5,14 @@ export default function PersonalInfoEditor() {
     const p = cvData.personal;
 
     const fields: { label: string; key: keyof typeof p; type?: string; placeholder: string }[] = [
-        { label: 'Full Name', key: 'fullName', placeholder: 'John Doe' },
-        { label: 'Target Title', key: 'targetTitle', placeholder: 'Software Engineer' },
-        { label: 'Email', key: 'email', type: 'email', placeholder: 'john@example.com' },
-        { label: 'Phone', key: 'phone', type: 'tel', placeholder: '+1 555-0100' },
+        { label: 'Full name', key: 'fullName', placeholder: 'Amira Haddad' },
+        { label: 'Target title', key: 'targetTitle', placeholder: 'Software Engineer' },
+        { label: 'Email', key: 'email', type: 'email', placeholder: 'amira.haddad@email.com' },
+        { label: 'Phone', key: 'phone', type: 'tel', placeholder: '+33 6 48 21 90 37' },
         { label: 'Location', key: 'location', placeholder: 'New York, NY' },
-        { label: 'LinkedIn', key: 'linkedIn', placeholder: 'linkedin.com/in/johndoe' },
-        { label: 'GitHub', key: 'github', placeholder: 'github.com/johndoe' },
-        { label: 'Portfolio', key: 'portfolio', placeholder: 'johndoe.dev' },
+        { label: 'LinkedIn', key: 'linkedIn', placeholder: 'linkedin.com/in/amirahaddad' },
+        { label: 'GitHub', key: 'github', placeholder: 'github.com/amirahaddad' },
+        { label: 'Portfolio', key: 'portfolio', placeholder: 'amirahaddad.dev' },
     ];
 
     return (
@@ -26,7 +26,7 @@ export default function PersonalInfoEditor() {
                             value={p[f.key]}
                             onChange={(e) => updateField(`personal.${f.key}`, e.target.value)}
                             placeholder={f.placeholder}
-                            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition"
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition"
                         />
                     </div>
                 ))}

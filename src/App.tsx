@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { IconContext, X } from '@phosphor-icons/react';
 import { CVProvider } from './context/CVContext';
 import Toolbar from './components/Toolbar';
 import Editor from './components/editor/Editor';
@@ -21,9 +22,11 @@ export default function App() {
   };
 
   return (
+    // One icon size and weight for the whole interface; icons are decorative next to their labels.
+    <IconContext.Provider value={{ size: 16, weight: 'regular', 'aria-hidden': true }}>
     <CVProvider>
       <WelcomeDialog />
-      <div className="h-screen flex flex-col bg-zinc-950 text-zinc-100">
+      <div className="h-dvh flex flex-col bg-zinc-950 text-zinc-100">
         <Toolbar
           showATS={showATS}
           onToggleATS={() => { setShowATS(!showATS); if (!showATS) setShowChat(false); }}
@@ -36,7 +39,7 @@ export default function App() {
         <div className="flex-1 flex overflow-hidden">
           {/* Editor Panel */}
           <div
-            className={`no-print w-full sm:w-[420px] lg:w-[480px] flex-shrink-0 border-r border-zinc-800 p-4 overflow-hidden ${mobileView !== 'editor' ? 'hidden sm:block' : ''
+            className={`no-print w-full sm:w-[420px] lg:w-[480px] flex-shrink-0 border-r border-zinc-800/80 p-4 overflow-hidden ${mobileView !== 'editor' ? 'hidden sm:block' : ''
               }`}
           >
             <Editor />
@@ -52,15 +55,15 @@ export default function App() {
 
           {/* ATS Checker Sidebar */}
           {showATS && (
-            <div className="hidden lg:block w-[300px] flex-shrink-0 border-l border-zinc-800 p-4 overflow-y-auto custom-scrollbar">
+            <div className="hidden lg:block w-[300px] flex-shrink-0 border-l border-zinc-800/80 p-4 overflow-y-auto custom-scrollbar">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-semibold text-zinc-200">ATS Compatibility</h2>
+                <h2 className="text-sm font-semibold text-zinc-100">ATS compatibility</h2>
                 <button
                   onClick={() => setShowATS(false)}
                   aria-label="Close ATS check"
-                  className="text-zinc-500 hover:text-zinc-300 transition"
+                  className="p-1 rounded-md text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800"
                 >
-                  &times;
+                  <X />
                 </button>
               </div>
               <ATSChecker onJump={jumpToEditor} />
@@ -69,7 +72,7 @@ export default function App() {
 
           {/* AI Chatbot Sidebar */}
           {showChat && (
-            <div className="hidden lg:flex lg:flex-col w-[360px] flex-shrink-0 border-l border-zinc-800">
+            <div className="hidden lg:flex lg:flex-col w-[360px] flex-shrink-0 border-l border-zinc-800/80">
               <AIChatbot />
             </div>
           )}
@@ -78,15 +81,15 @@ export default function App() {
         {/* Mobile ATS Checker (overlay) */}
         {showATS && (
           <div className="lg:hidden fixed inset-0 z-50 bg-black/60 flex items-end justify-center">
-            <div className="w-full max-w-lg bg-zinc-900 border-t border-zinc-700 rounded-t-2xl p-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <div className="w-full max-w-lg bg-zinc-900 border-t border-zinc-800 rounded-t-xl p-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-semibold text-zinc-200">ATS Compatibility</h2>
+                <h2 className="text-sm font-semibold text-zinc-100">ATS compatibility</h2>
                 <button
                   onClick={() => setShowATS(false)}
                   aria-label="Close ATS check"
-                  className="text-zinc-400 hover:text-zinc-200 transition text-lg"
+                  className="p-1 rounded-md text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800"
                 >
-                  &times;
+                  <X />
                 </button>
               </div>
               <ATSChecker onJump={jumpToEditor} />
@@ -97,15 +100,15 @@ export default function App() {
         {/* Mobile AI Chatbot (overlay) */}
         {showChat && (
           <div className="lg:hidden fixed inset-0 z-50 bg-black/60 flex items-end justify-center">
-            <div className="w-full max-w-lg bg-zinc-900 border-t border-zinc-700 rounded-t-2xl max-h-[80vh] flex flex-col">
-              <div className="flex items-center justify-between px-4 pt-3 pb-2">
-                <h2 className="text-sm font-semibold text-zinc-200">✨ AI Assistant</h2>
+            <div className="w-full max-w-lg bg-zinc-900 border-t border-zinc-800 rounded-t-xl max-h-[80vh] flex flex-col">
+              {/* The assistant has its own title bar; this row only closes the sheet. */}
+              <div className="flex justify-end px-3 pt-2">
                 <button
                   onClick={() => setShowChat(false)}
                   aria-label="Close AI assistant"
-                  className="text-zinc-400 hover:text-zinc-200 transition text-lg"
+                  className="p-1 rounded-md text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800"
                 >
-                  &times;
+                  <X />
                 </button>
               </div>
               <div className="flex-1 overflow-hidden">
@@ -116,5 +119,6 @@ export default function App() {
         )}
       </div>
     </CVProvider>
+    </IconContext.Provider>
   );
 }

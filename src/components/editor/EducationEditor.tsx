@@ -1,4 +1,5 @@
 import { useCV } from '../../context/CVContext';
+import { ArrowDown, ArrowUp, Plus, X } from '@phosphor-icons/react';
 import { DateInput } from './fields';
 import type { EducationItem } from '../../types';
 import { v4 } from '../../data/uuid';
@@ -62,23 +63,23 @@ export default function EducationEditor() {
                     <div className="flex items-center justify-between">
                         <span className="text-xs text-zinc-500 font-medium">Education {idx + 1}</span>
                         <div className="flex gap-1">
-                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up">&uarr;</button>
-                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down">&darr;</button>
-                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove">&times;</button>
+                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up"><ArrowUp /></button>
+                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down"><ArrowDown /></button>
+                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove"><X /></button>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-xs text-zinc-400 mb-1">Degree / Qualification</label>
-                            <input value={item.degree} onChange={(e) => updateItem(idx, 'degree', e.target.value)} placeholder="BSc Computer Science" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
+                            <label className="block text-xs text-zinc-400 mb-1">Degree or qualification</label>
+                            <input value={item.degree} onChange={(e) => updateItem(idx, 'degree', e.target.value)} placeholder="BSc Computer Science" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition" />
                         </div>
                         <div>
-                            <label className="block text-xs text-zinc-400 mb-1">School / University</label>
-                            <input value={item.school} onChange={(e) => updateItem(idx, 'school', e.target.value)} placeholder="MIT" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
+                            <label className="block text-xs text-zinc-400 mb-1">School or university</label>
+                            <input value={item.school} onChange={(e) => updateItem(idx, 'school', e.target.value)} placeholder="MIT" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition" />
                         </div>
                         <div>
                             <label className="block text-xs text-zinc-400 mb-1">Location</label>
-                            <input value={item.location} onChange={(e) => updateItem(idx, 'location', e.target.value)} placeholder="Cambridge, MA" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
+                            <input value={item.location} onChange={(e) => updateItem(idx, 'location', e.target.value)} placeholder="Cambridge, MA" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition" />
                         </div>
                         <div className="sm:col-span-2 grid grid-cols-2 gap-3">
                             <DateInput label="Start date" value={item.startDate} onChange={(v) => updateItem(idx, 'startDate', v)} language={language} />
@@ -86,27 +87,27 @@ export default function EducationEditor() {
                         </div>
                         <div className="sm:col-span-2">
                             <label className="block text-xs text-zinc-400 mb-1">Grade (optional)</label>
-                            <input value={item.grade} onChange={(e) => updateItem(idx, 'grade', e.target.value)} placeholder="First Class Honours / GPA 3.8" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
+                            <input value={item.grade} onChange={(e) => updateItem(idx, 'grade', e.target.value)} placeholder="First Class Honours / GPA 3.8" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition" />
                         </div>
                     </div>
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <label className="text-xs text-zinc-400 font-medium">Key Modules (max 3)</label>
+                            <label className="text-xs text-zinc-400 font-medium">Key modules (max 3)</label>
                             {item.modules.length < 3 && (
-                                <button onClick={() => addModule(idx)} className="text-xs text-blue-400 hover:text-blue-300 transition">+ Add Module</button>
+                                <button onClick={() => addModule(idx)} className="inline-flex items-center gap-1 text-xs text-accent-400 hover:text-accent-300"><Plus />Add module</button>
                             )}
                         </div>
                         {item.modules.map((m, mi) => (
                             <div key={mi} className="flex gap-2 mb-2">
-                                <input value={m} onChange={(e) => updateModule(idx, mi, e.target.value)} placeholder={`Module ${mi + 1}`} className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
-                                <button onClick={() => removeModule(idx, mi)} aria-label={`Remove module ${mi + 1}`} className="text-zinc-500 hover:text-red-400 px-1 transition">&times;</button>
+                                <input value={m} onChange={(e) => updateModule(idx, mi, e.target.value)} placeholder={`Module ${mi + 1}`} className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition" />
+                                <button onClick={() => removeModule(idx, mi)} aria-label={`Remove module ${mi + 1}`} className="text-zinc-500 hover:text-red-400 px-1 transition"><X /></button>
                             </div>
                         ))}
                     </div>
                 </div>
             ))}
-            <button onClick={addItem} className="w-full py-2 border-2 border-dashed border-zinc-700 rounded-lg text-sm text-zinc-400 hover:text-blue-400 hover:border-blue-500/50 transition">
-                + Add Education
+            <button onClick={addItem} className="w-full py-2 flex items-center justify-center gap-1.5 border border-dashed border-zinc-700 rounded-lg text-sm text-zinc-400 hover:text-accent-400 hover:border-accent-500/50 transition">
+                <Plus />Add education
             </button>
         </div>
     );

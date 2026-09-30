@@ -2,7 +2,7 @@ import { useId, useLayoutEffect, useRef, useState } from 'react';
 import type { CVLanguage } from '../../types';
 
 // Width is set per use: a shared w-full would fight the fixed width of the year box.
-const FIELD = 'bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition disabled:opacity-50';
+const FIELD = 'bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500 transition disabled:opacity-50';
 
 interface BulletInputProps {
     value: string;
@@ -37,7 +37,7 @@ export function BulletInput({ value, onChange, placeholder, label }: BulletInput
             />
             {length > 120 && (
                 <p className={`mt-1 text-xs text-right ${length > 200 ? 'text-amber-400' : 'text-zinc-500'}`}>
-                    {length} characters{length > 200 ? ': consider shortening to 1–2 lines' : ''}
+                    {length} characters{length > 200 ? ': consider shortening to 1-2 lines' : ''}
                 </p>
             )}
         </div>

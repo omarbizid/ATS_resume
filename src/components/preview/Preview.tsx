@@ -23,7 +23,7 @@ export default function Preview() {
     }, []);
     return (
         <div ref={container} className="h-full overflow-auto bg-zinc-800/30 p-4 custom-scrollbar">
-            <p className="no-print text-xs text-zinc-400 text-center mb-4">Live preview · A4 · Export PDF for final page breaks</p>
+            <p className="no-print text-xs text-zinc-500 text-center mb-4">Live preview on A4. Final page breaks appear in the exported PDF.</p>
             <div className="preview-sheet-shell mx-auto" style={{ width: `${210 * size.scale}mm`, height: size.height * size.scale }}>
                 <div ref={document} id="cv-preview" className="cv-page-wrapper shadow-2xl" style={{ transform: `scale(${size.scale})`, transformOrigin: 'top left' }}>
                     <TemplateRenderer cvData={cvData} templateId={cvData.templateId} />

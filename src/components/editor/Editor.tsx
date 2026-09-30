@@ -12,11 +12,12 @@ import ExtracurricularsEditor from './ExtracurricularsEditor';
 import ProjectsEditor from './ProjectsEditor';
 import SectionReorder from './SectionReorder';
 import { onOpenEditorSection } from './editorNav';
+import { CaretDown, DotsSixVertical } from '@phosphor-icons/react';
 import type { SectionKey } from '../../types';
 
 const SECTION_EDITORS: Record<SectionKey, { label: string; component: React.FC }> = {
     summary: { label: 'Summary', component: SummaryEditor },
-    experience: { label: 'Work Experience', component: ExperienceEditor },
+    experience: { label: 'Work experience', component: ExperienceEditor },
     education: { label: 'Education', component: EducationEditor },
     skills: { label: 'Skills', component: SkillsEditor },
     certifications: { label: 'Certifications', component: CertificationsEditor },
@@ -110,14 +111,14 @@ export default function Editor() {
                     <DesignEditor />
                 </div>
                 {/* Personal Info - always first, not draggable */}
-                <div id="editor-personal" className="scroll-mt-2 bg-zinc-900/80 border border-zinc-800 rounded-xl overflow-hidden">
+                <div id="editor-personal" className="scroll-mt-2 bg-zinc-900/60 border border-zinc-800/70 rounded-xl overflow-hidden">
                     <button
                         onClick={() => toggleSection('personal')}
                         aria-expanded={openSections.has('personal')}
                         className="w-full flex items-center justify-between px-4 py-3 hover:bg-zinc-800/50 transition"
                     >
-                        <span className="text-sm font-semibold text-zinc-200">Personal Information</span>
-                        <span className="text-zinc-500 text-xs" aria-hidden="true">{openSections.has('personal') ? '−' : '+'}</span>
+                        <span className="text-[15px] font-medium text-zinc-100">Personal information</span>
+                        <CaretDown className={`text-zinc-500 transition-transform duration-200 ${openSections.has('personal') ? 'rotate-180' : ''}`} />
                     </button>
                     {openSections.has('personal') && (
                         <div className="px-4 pb-4">
@@ -144,9 +145,9 @@ export default function Editor() {
                             onDragLeave={handleDragLeave}
                             onDrop={(e) => handleDrop(e, index)}
                             onDragEnd={handleDragEnd}
-                            className={`scroll-mt-2 bg-zinc-900/80 border rounded-xl overflow-hidden transition-all duration-150 ${isDragOver && !isDragging
-                                    ? 'border-blue-500 ring-2 ring-blue-500/30'
-                                    : 'border-zinc-800'
+                            className={`scroll-mt-2 bg-zinc-900/60 border rounded-xl overflow-hidden transition-all duration-150 ${isDragOver && !isDragging
+                                    ? 'border-accent-500 ring-2 ring-accent-500/30'
+                                    : 'border-zinc-800/70'
                                 } ${isDragging ? 'opacity-40' : ''}`}
                         >
                             <button
@@ -155,13 +156,13 @@ export default function Editor() {
                                 className="w-full flex items-center justify-between px-4 py-3 hover:bg-zinc-800/50 transition cursor-grab active:cursor-grabbing"
                             >
                                 <div className="flex items-center gap-2">
-                                    <span className="text-zinc-600 text-xs select-none" title="Drag to reorder" aria-hidden="true">⠿</span>
-                                    <span className="text-sm font-semibold text-zinc-200">{editor.label}</span>
+                                    <span className="text-zinc-600 select-none" title="Drag to reorder"><DotsSixVertical /></span>
+                                    <span className="text-[15px] font-medium text-zinc-100">{editor.label}</span>
                                     {!section.visible && (
-                                        <span className="text-xs bg-zinc-700 text-zinc-400 px-1.5 py-0.5 rounded">Hidden</span>
+                                        <span className="text-xs text-zinc-500">Hidden</span>
                                     )}
                                 </div>
-                                <span className="text-zinc-500 text-xs" aria-hidden="true">{openSections.has(section.key) ? '−' : '+'}</span>
+                                <CaretDown className={`text-zinc-500 transition-transform duration-200 ${openSections.has(section.key) ? 'rotate-180' : ''}`} />
                             </button>
                             {openSections.has(section.key) && (
                                 <div className="px-4 pb-4">
@@ -173,14 +174,14 @@ export default function Editor() {
                 })}
 
                 {/* Section Reorder */}
-                <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl overflow-hidden">
+                <div className="bg-zinc-900/60 border border-zinc-800/70 rounded-xl overflow-hidden">
                     <button
                         onClick={() => setShowReorder(!showReorder)}
                         aria-expanded={showReorder}
                         className="w-full flex items-center justify-between px-4 py-3 hover:bg-zinc-800/50 transition"
                     >
-                        <span className="text-sm font-semibold text-zinc-200">Section Order & Visibility</span>
-                        <span className="text-zinc-500 text-xs" aria-hidden="true">{showReorder ? '−' : '+'}</span>
+                        <span className="text-[15px] font-medium text-zinc-100">Section order and visibility</span>
+                        <CaretDown className={`text-zinc-500 transition-transform duration-200 ${showReorder ? 'rotate-180' : ''}`} />
                     </button>
                     {showReorder && (
                         <div className="px-4 pb-4">

@@ -1,4 +1,5 @@
 import { useCV } from '../../context/CVContext';
+import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
 import type { SectionKey } from '../../types';
 
 export default function SectionReorder() {
@@ -26,7 +27,7 @@ export default function SectionReorder() {
                             type="checkbox"
                             checked={section.visible}
                             onChange={() => toggle(section.key)}
-                            className="rounded border-zinc-600 bg-zinc-800 text-blue-500 focus:ring-blue-500/50"
+                            className="rounded border-zinc-600 bg-zinc-800 text-accent-500 focus:ring-accent-500/50"
                         />
                         <span className={`text-sm ${section.visible ? 'text-zinc-200' : 'text-zinc-500 line-through'}`}>
                             {section.label}
@@ -40,7 +41,7 @@ export default function SectionReorder() {
                             title="Move up"
                             aria-label={`Move up ${section.label}`}
                         >
-                            &uarr;
+                            <ArrowUp />
                         </button>
                         <button
                             onClick={() => move(section.key, 'down')}
@@ -49,7 +50,7 @@ export default function SectionReorder() {
                             title="Move down"
                             aria-label={`Move down ${section.label}`}
                         >
-                            &darr;
+                            <ArrowDown />
                         </button>
                     </div>
                 </div>
