@@ -181,6 +181,7 @@ interface CVContextValue {
     canRedo: boolean;
     /** True when this browser had no saved CV at startup. */
     isNewVisitor: boolean;
+    saveStatus: 'saved' | 'saving' | 'error';
 }
 
 const CVContext = createContext<CVContextValue | null>(null);
@@ -202,9 +203,10 @@ export function CVProvider({ children }: { children: ReactNode }) {
     const [toast, setToast] = useState<Toast | null>(null);
 
     const [saveError, setSaveError] = useState(false);
+    const [savedData, setSavedData] = useState<CVData | null>(null);
     useEffect(() => {
         const timer = window.setTimeout(() => {
-            try { saveToStorage(cvData); setSaveError(false); }
+            try { saveToStorage(cvData); setSaveError(false); setSavedData(cvData); }
             catch { setSaveError(true); }
         }, 150);
         const flush = () => { try { saveToStorage(cvData); } catch { /* Banner handles storage errors. */ } };
@@ -214,7 +216,8 @@ export function CVProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (!toast) return;
-        const timer = window.setTimeout(() => setToast(null), 6000);
+        // Longer messages (like the print tips) need more reading time.
+        const timer = window.setTimeout(() => setToast(null), toast.message.length > 60 ? 10000 : 6000);
         return () => clearTimeout(timer);
     }, [toast]);
 
@@ -259,6 +262,7 @@ export function CVProvider({ children }: { children: ReactNode }) {
         canUndo: history.past.length > 0,
         canRedo: history.future.length > 0,
         isNewVisitor: initial.isNewVisitor,
+        saveStatus: saveError ? 'error' : savedData === cvData ? 'saved' : 'saving',
     };
 
     return (

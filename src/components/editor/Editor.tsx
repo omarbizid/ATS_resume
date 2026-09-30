@@ -158,7 +158,7 @@ export default function Editor() {
                                     <span className="text-zinc-600 text-xs select-none" title="Drag to reorder" aria-hidden="true">⠿</span>
                                     <span className="text-sm font-semibold text-zinc-200">{editor.label}</span>
                                     {!section.visible && (
-                                        <span className="text-[10px] bg-zinc-700 text-zinc-400 px-1.5 py-0.5 rounded">Hidden</span>
+                                        <span className="text-xs bg-zinc-700 text-zinc-400 px-1.5 py-0.5 rounded">Hidden</span>
                                     )}
                                 </div>
                                 <span className="text-zinc-500 text-xs" aria-hidden="true">{openSections.has(section.key) ? '−' : '+'}</span>

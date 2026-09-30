@@ -329,7 +329,7 @@ export default function AIChatbot() {
                     <h2 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
                         <span className="text-lg">✨</span> AI Assistant
                         {proxyMode && (
-                            <span className="text-[9px] bg-emerald-900/50 text-emerald-400 px-1.5 py-0.5 rounded-full font-normal">
+                            <span className="text-xs bg-emerald-900/50 text-emerald-400 px-1.5 py-0.5 rounded-full font-normal">
                                 proxy
                             </span>
                         )}
@@ -337,7 +337,7 @@ export default function AIChatbot() {
                     {!proxyMode && apiKey && (
                         <button
                             onClick={removeKey}
-                            className="text-[10px] text-zinc-500 hover:text-red-400 transition"
+                            className="text-xs text-zinc-500 hover:text-red-400 transition"
                             title="Remove API key"
                         >
                             Remove key
@@ -347,7 +347,7 @@ export default function AIChatbot() {
                 <select
                     value={modelId}
                     onChange={(e) => { const m = e.target.value as GeminiModelId; setModelId(m); setModel(m); }}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-md px-2 py-1 text-[11px] text-zinc-300 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-md px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
                 >
                     {AVAILABLE_MODELS.map((m) => (
                         <option key={m.id} value={m.id}>{m.label}</option>
@@ -389,7 +389,7 @@ export default function AIChatbot() {
                         {/* Applied indicator for AI messages with updates */}
                         {msg.role === 'model' && appliedUpdates.has(i) && (
                             <div className="flex justify-start mt-1 ml-1">
-                                <span className="text-[10px] text-emerald-400 flex items-center gap-1">
+                                <span className="text-xs text-emerald-400 flex items-center gap-1">
                                     ✓ Updated: {changedSections(pendingUpdates.get(i) ?? [])}
                                 </span>
                             </div>
@@ -399,7 +399,7 @@ export default function AIChatbot() {
                             <div className="flex justify-start mt-1.5 ml-1">
                                 <button
                                     onClick={() => applyUpdates(i)}
-                                    className="px-3 py-1 bg-emerald-600/80 hover:bg-emerald-500 text-white text-[10px] font-medium rounded-lg transition flex items-center gap-1"
+                                    className="px-3 py-1 bg-emerald-600/80 hover:bg-emerald-500 text-white text-xs font-medium rounded-lg transition flex items-center gap-1"
                                 >
                                     ✨ Apply changes
                                 </button>

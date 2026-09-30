@@ -41,8 +41,10 @@ Open [http://localhost:5173](http://localhost:5173).
 2. In the print dialog, select **"Save as PDF"** as the destination
 3. Set paper size to **A4**
 4. Set margins to **None** or **Minimum**
-5. Ensure **"Background graphics"** is **unchecked**
+5. **"Background graphics"** can stay off for the ATS templates, which have no shading; turn it **on** for the designed resume so the sidebar prints
 6. Save
+
+The app shows these settings in a notification when you click Export PDF.
 
 The exported PDF will contain:
 - Selectable, copy-pasteable text (not images)
