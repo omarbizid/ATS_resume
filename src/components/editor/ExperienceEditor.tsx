@@ -1,10 +1,12 @@
 import { useCV } from '../../context/CVContext';
+import { BulletInput, DateInput } from './fields';
 import type { ExperienceItem } from '../../types';
 import { v4 } from '../../data/uuid';
 
 export default function ExperienceEditor() {
     const { cvData, updateField, dispatch } = useCV();
     const items = cvData.experience;
+    const language = cvData.cvLanguage ?? 'en';
 
     const addItem = () => {
         const newItem: ExperienceItem = {
@@ -62,9 +64,9 @@ export default function ExperienceEditor() {
                     <div className="flex items-center justify-between">
                         <span className="text-xs text-zinc-500 font-medium">Experience {idx + 1}</span>
                         <div className="flex gap-1">
-                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up">&uarr;</button>
-                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down">&darr;</button>
-                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove">&times;</button>
+                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up">&uarr;</button>
+                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down">&darr;</button>
+                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove">&times;</button>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -80,15 +82,16 @@ export default function ExperienceEditor() {
                             <label className="block text-xs text-zinc-400 mb-1">Location</label>
                             <input value={item.location} onChange={(e) => updateItem(idx, 'location', e.target.value)} placeholder="New York, NY" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="flex-1">
-                                <label className="block text-xs text-zinc-400 mb-1">Start Date</label>
-                                <input value={item.startDate} onChange={(e) => updateItem(idx, 'startDate', e.target.value)} placeholder="Jan 2024" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
-                            </div>
-                            <div className="flex-1">
-                                <label className="block text-xs text-zinc-400 mb-1">End Date</label>
-                                <input value={item.isCurrent ? 'Present' : item.endDate} onChange={(e) => updateItem(idx, 'endDate', e.target.value)} disabled={item.isCurrent} placeholder="Dec 2024" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition disabled:opacity-50" />
-                            </div>
+                        <div className="sm:col-span-2 grid grid-cols-2 gap-3">
+                            <DateInput label="Start date" value={item.startDate} onChange={(v) => updateItem(idx, 'startDate', v)} language={language} />
+                            {item.isCurrent ? (
+                                <div>
+                                    <span className="block text-xs text-zinc-400 mb-1">End date</span>
+                                    <input value="Present" disabled aria-label="End date" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 opacity-50" />
+                                </div>
+                            ) : (
+                                <DateInput label="End date" value={item.endDate} onChange={(v) => updateItem(idx, 'endDate', v)} language={language} />
+                            )}
                         </div>
                     </div>
                     <label className="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer">
@@ -104,10 +107,10 @@ export default function ExperienceEditor() {
                         </div>
                         {item.bullets.map((b, bi) => (
                             <div key={bi} className="flex gap-2 mb-2">
-                                <span className="text-zinc-600 mt-2 text-sm">•</span>
-                                <input value={b} onChange={(e) => updateBullet(idx, bi, e.target.value)} placeholder={`Achievement or responsibility ${bi + 1}`} className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
+                                <span className="text-zinc-600 mt-2 text-sm" aria-hidden="true">•</span>
+                                <BulletInput value={b} onChange={(v) => updateBullet(idx, bi, v)} placeholder={`Achievement or responsibility ${bi + 1}`} label={`Bullet ${bi + 1}`} />
                                 {item.bullets.length > 1 && (
-                                    <button onClick={() => removeBullet(idx, bi)} className="text-zinc-500 hover:text-red-400 px-1 transition">&times;</button>
+                                    <button onClick={() => removeBullet(idx, bi)} aria-label={`Remove bullet ${bi + 1}`} className="text-zinc-500 hover:text-red-400 px-1 transition">&times;</button>
                                 )}
                             </div>
                         ))}

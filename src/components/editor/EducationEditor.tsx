@@ -1,10 +1,12 @@
 import { useCV } from '../../context/CVContext';
+import { DateInput } from './fields';
 import type { EducationItem } from '../../types';
 import { v4 } from '../../data/uuid';
 
 export default function EducationEditor() {
     const { cvData, updateField, dispatch } = useCV();
     const items = cvData.education;
+    const language = cvData.cvLanguage ?? 'en';
 
     const addItem = () => {
         const newItem: EducationItem = {
@@ -60,9 +62,9 @@ export default function EducationEditor() {
                     <div className="flex items-center justify-between">
                         <span className="text-xs text-zinc-500 font-medium">Education {idx + 1}</span>
                         <div className="flex gap-1">
-                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up">&uarr;</button>
-                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down">&darr;</button>
-                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove">&times;</button>
+                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up">&uarr;</button>
+                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down">&darr;</button>
+                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove">&times;</button>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -78,15 +80,9 @@ export default function EducationEditor() {
                             <label className="block text-xs text-zinc-400 mb-1">Location</label>
                             <input value={item.location} onChange={(e) => updateItem(idx, 'location', e.target.value)} placeholder="Cambridge, MA" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="flex-1">
-                                <label className="block text-xs text-zinc-400 mb-1">Start Date</label>
-                                <input value={item.startDate} onChange={(e) => updateItem(idx, 'startDate', e.target.value)} placeholder="Sep 2020" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
-                            </div>
-                            <div className="flex-1">
-                                <label className="block text-xs text-zinc-400 mb-1">End Date</label>
-                                <input value={item.endDate} onChange={(e) => updateItem(idx, 'endDate', e.target.value)} placeholder="Jun 2024" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
-                            </div>
+                        <div className="sm:col-span-2 grid grid-cols-2 gap-3">
+                            <DateInput label="Start date" value={item.startDate} onChange={(v) => updateItem(idx, 'startDate', v)} language={language} />
+                            <DateInput label="End date" value={item.endDate} onChange={(v) => updateItem(idx, 'endDate', v)} language={language} />
                         </div>
                         <div className="sm:col-span-2">
                             <label className="block text-xs text-zinc-400 mb-1">Grade (optional)</label>
@@ -103,7 +99,7 @@ export default function EducationEditor() {
                         {item.modules.map((m, mi) => (
                             <div key={mi} className="flex gap-2 mb-2">
                                 <input value={m} onChange={(e) => updateModule(idx, mi, e.target.value)} placeholder={`Module ${mi + 1}`} className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
-                                <button onClick={() => removeModule(idx, mi)} className="text-zinc-500 hover:text-red-400 px-1 transition">&times;</button>
+                                <button onClick={() => removeModule(idx, mi)} aria-label={`Remove module ${mi + 1}`} className="text-zinc-500 hover:text-red-400 px-1 transition">&times;</button>
                             </div>
                         ))}
                     </div>

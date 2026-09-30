@@ -1,4 +1,5 @@
 import { useCV } from '../../context/CVContext';
+import { BulletInput } from './fields';
 
 export default function SummaryEditor() {
     const { cvData, updateField } = useCV();
@@ -48,16 +49,12 @@ export default function SummaryEditor() {
                 </div>
                 {highlights.map((h, i) => (
                     <div key={i} className="flex gap-2 mb-2">
-                        <input
-                            value={h}
-                            onChange={(e) => updateHighlight(i, e.target.value)}
-                            placeholder={`Highlight ${i + 1}`}
-                            className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition"
-                        />
+                        <BulletInput value={h} onChange={(v) => updateHighlight(i, v)} placeholder={`Highlight ${i + 1}`} label={`Highlight ${i + 1}`} />
                         <button
                             onClick={() => removeHighlight(i)}
                             className="text-zinc-500 hover:text-red-400 px-2 transition"
                             title="Remove"
+                            aria-label={`Remove highlight ${i + 1}`}
                         >
                             &times;
                         </button>

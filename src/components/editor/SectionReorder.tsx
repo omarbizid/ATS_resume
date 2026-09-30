@@ -38,6 +38,7 @@ export default function SectionReorder() {
                             disabled={idx === 0}
                             className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition"
                             title="Move up"
+                            aria-label={`Move up ${section.label}`}
                         >
                             &uarr;
                         </button>
@@ -46,6 +47,7 @@ export default function SectionReorder() {
                             disabled={idx === sorted.length - 1}
                             className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition"
                             title="Move down"
+                            aria-label={`Move down ${section.label}`}
                         >
                             &darr;
                         </button>

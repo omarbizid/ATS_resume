@@ -1,10 +1,12 @@
 import { useCV } from '../../context/CVContext';
+import { BulletInput, DateInput } from './fields';
 import type { ProjectItem } from '../../types';
 import { v4 } from '../../data/uuid';
 
 export default function ProjectsEditor() {
     const { cvData, updateField, dispatch } = useCV();
     const items = cvData.projects ?? [];
+    const language = cvData.cvLanguage ?? 'en';
 
     const addItem = () => {
         const newItem: ProjectItem = { id: v4(), title: '', description: '', startDate: '', endDate: '', bullets: [''] };
@@ -49,9 +51,9 @@ export default function ProjectsEditor() {
                     <div className="flex items-center justify-between">
                         <span className="text-xs text-zinc-500 font-medium">Project {idx + 1}</span>
                         <div className="flex gap-1">
-                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up">&uarr;</button>
-                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down">&darr;</button>
-                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove">&times;</button>
+                            <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move up" aria-label="Move up">&uarr;</button>
+                            <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-zinc-500 hover:text-zinc-300 disabled:opacity-30 px-1 text-sm transition" title="Move down" aria-label="Move down">&darr;</button>
+                            <button onClick={() => removeItem(idx)} className="text-zinc-500 hover:text-red-400 px-1 transition" title="Remove" aria-label="Remove">&times;</button>
                         </div>
                     </div>
                     <div>
@@ -63,14 +65,8 @@ export default function ProjectsEditor() {
                         <input value={item.description} onChange={(e) => updateField(`projects.${idx}.description`, e.target.value)} placeholder="e.g. Academic project, Personal project" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs text-zinc-400 mb-1">Start Date</label>
-                            <input value={item.startDate} onChange={(e) => updateField(`projects.${idx}.startDate`, e.target.value)} placeholder="Sep 2024" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
-                        </div>
-                        <div>
-                            <label className="block text-xs text-zinc-400 mb-1">End Date</label>
-                            <input value={item.endDate} onChange={(e) => updateField(`projects.${idx}.endDate`, e.target.value)} placeholder="Jan 2025" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
-                        </div>
+                        <DateInput label="Start date" value={item.startDate} onChange={(v) => updateField(`projects.${idx}.startDate`, v)} language={language} />
+                        <DateInput label="End date" value={item.endDate} onChange={(v) => updateField(`projects.${idx}.endDate`, v)} language={language} />
                     </div>
                     <div>
                         <div className="flex items-center justify-between mb-2">
@@ -81,10 +77,10 @@ export default function ProjectsEditor() {
                         </div>
                         {item.bullets.map((b, bi) => (
                             <div key={bi} className="flex gap-2 mb-2">
-                                <span className="text-zinc-600 mt-2 text-sm">•</span>
-                                <input value={b} onChange={(e) => updateBullet(idx, bi, e.target.value)} placeholder={`Describe what you did ${bi + 1}`} className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition" />
+                                <span className="text-zinc-600 mt-2 text-sm" aria-hidden="true">•</span>
+                                <BulletInput value={b} onChange={(v) => updateBullet(idx, bi, v)} placeholder={`Describe what you did ${bi + 1}`} label={`Bullet ${bi + 1}`} />
                                 {item.bullets.length > 1 && (
-                                    <button onClick={() => removeBullet(idx, bi)} className="text-zinc-500 hover:text-red-400 px-1 transition">&times;</button>
+                                    <button onClick={() => removeBullet(idx, bi)} aria-label={`Remove bullet ${bi + 1}`} className="text-zinc-500 hover:text-red-400 px-1 transition">&times;</button>
                                 )}
                             </div>
                         ))}
