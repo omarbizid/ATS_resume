@@ -40,7 +40,7 @@ Open [http://localhost:5173](http://localhost:5173).
 1. Click **Export PDF** (or press Ctrl+P / Cmd+P)
 2. In the print dialog, select **"Save as PDF"** as the destination
 3. Set paper size to **A4**
-4. Set margins to **None** or **Minimum**
+4. Leave margins on **Default** (the CV sets its own page margins, so every page has the same top and bottom space)
 5. **"Background graphics"** can stay off for the ATS templates, which have no shading; turn it **on** for the designed resume so the sidebar prints
 6. Save
 
