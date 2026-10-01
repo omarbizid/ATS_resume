@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { DownloadSimple } from '@phosphor-icons/react';
 import { useCV } from '../../context/CVContext';
 import { readCVFile } from '../../data/importCV';
+import { pageMargins } from '../preview/pagination';
 
 /**
  * Recursively inline all computed styles on an element tree.
@@ -56,11 +57,20 @@ export default function ExportControls({ variant = 'toolbar', onDone }: Props) {
     clone.removeAttribute('class');
     clone.removeAttribute('id');
 
+    // The template's top and bottom padding become real page margins, so every page
+    // (not just the first) keeps them; the preview breaks pages with the same margins.
+    const { top: marginTop, bottom: marginBottom } = pageMargins(cvPreview);
+    const pageClone = clone.firstElementChild as HTMLElement | null;
+    if (pageClone) {
+      pageClone.style.paddingTop = '0';
+      pageClone.style.paddingBottom = '0';
+    }
+
     // Force wrapper styles for A4
     clone.style.transform = 'none';
     clone.style.height = 'auto';
     clone.style.width = '210mm';
-    clone.style.minHeight = '297mm';
+    clone.style.minHeight = '0';
     clone.style.background = 'white';
     clone.style.boxShadow = 'none';
     clone.style.margin = '0';
@@ -72,7 +82,7 @@ export default function ExportControls({ variant = 'toolbar', onDone }: Props) {
 <meta charset="utf-8">
 <title>Resume export</title>
 <style>
-  @page { size: A4; margin: 0; }
+  @page { size: A4; margin: ${marginTop}px 0 ${marginBottom}px; }
   html, body {
     margin: 0;
     padding: 0;
@@ -96,8 +106,8 @@ ${clone.outerHTML}
 
     // Print settings are the most common export problem, so say them up front.
     notify(cvData.templateId === 'designed'
-      ? 'In the print dialog choose "Save as PDF", paper A4, margins None, and turn on "Background graphics".'
-      : 'In the print dialog choose "Save as PDF", paper A4 and margins None.');
+      ? 'In the print dialog choose "Save as PDF", paper A4, margins Default, and turn on "Background graphics".'
+      : 'In the print dialog choose "Save as PDF", paper A4 and margins Default.');
 
     printWindow.document.open();
     printWindow.document.write(htmlContent);

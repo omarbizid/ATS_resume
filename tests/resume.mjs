@@ -111,7 +111,22 @@ await fresh.waitForTimeout(300);
 const edited=(await fresh.evaluate(()=>JSON.parse(localStorage.getItem('cv-builder-data')))).experience[0];
 assert.equal(edited.startDate,'Sep 2024');
 assert.equal(edited.bullets[0],'Built a tool used by 50 people');
+// A CV longer than one page gets a second A4 page, and the PDF has the same page count.
+const long=await browser.newPage();long.on('pageerror',e=>errors.push(e.message));
+await long.context().addInitScript(()=>{window.print=()=>{};});
+await long.goto(url);await long.getByRole('button',{name:/Explore the sample/}).click();
+await long.waitForFunction(()=>localStorage.getItem('cv-builder-data'));
+await long.evaluate(()=>{const cv=JSON.parse(localStorage.getItem('cv-builder-data'));const extra=cv.experience.map((e,i)=>({...e,id:'x'+i}));cv.experience=[...cv.experience,...extra,...extra.map((e,i)=>({...e,id:'y'+i}))];window.addEventListener('pagehide',()=>localStorage.setItem('cv-builder-data',JSON.stringify(cv)));});
+await long.reload();await long.waitForTimeout(500);
+assert.equal(await long.locator('.preview-page').count(),2,'long CV shows two preview pages');
+assert.ok(await long.getByText('2 A4 pages').isVisible());
+const longPopupPromise=long.waitForEvent('popup');
+await long.getByRole('button',{name:'Export PDF',exact:true}).click();
+const longPopup=await longPopupPromise;await longPopup.waitForLoadState();
+const longPdf=(await longPopup.pdf({printBackground:true,preferCSSPageSize:true})).toString('latin1');
+assert.equal((longPdf.match(/\/Type\s*\/Page(?![s\w])/g)||[]).length,2,'PDF has the same number of pages as the preview');
+await longPopup.close();
 assert.deepEqual(errors,[]);
-console.log('PASS: welcome dialog, undo toast, Ctrl+Z, blank start, ATS fix link, job match, date picker, bullets, phone menu, conversion, content preservation, photo upload, reload, colour, ATS switch, invalid upload, ATS check, PDF photo/bullets, mobile view.');
+console.log('PASS: page breaks, welcome dialog, undo toast, Ctrl+Z, blank start, ATS fix link, job match, date picker, bullets, phone menu, conversion, content preservation, photo upload, reload, colour, ATS switch, invalid upload, ATS check, PDF photo/bullets, mobile view.');
 } finally { await browser.close(); }
 })().catch(e=>{console.error(e);process.exit(1)});
